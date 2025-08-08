@@ -1,0 +1,89 @@
+package com.group2.library_management.entity;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.group2.library_management.entity.enums.RoleType;
+import com.group2.library_management.entity.enums.UserStatus;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Entity
+@Table(name = "users")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class User extends Auditable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private LocalDate dob;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(columnDefinition = "TEXT")
+    private String address;
+
+    @Column(nullable = false)
+    private Integer role;
+
+    @Column(nullable = false)
+    private Integer status; 
+
+    @OneToMany(mappedBy = "user")
+    private List<Follow> follows;
+
+    @OneToMany(mappedBy = "user")
+    private List<BorrowingReceipt> borrowingReceipts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Rating> ratings;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+
+    public void setRole(RoleType roleEnum) {
+        if (roleEnum != null) {
+            this.role = roleEnum.getValue();
+        }
+    }
+
+    public RoleType getRoleEnum() {
+        return RoleType.fromValue(this.role);
+    }
+
+    public void setStatus(UserStatus statusEnum) {
+        if (statusEnum != null) {
+            this.status = statusEnum.getValue();
+        }
+    }
+
+    public UserStatus getStatusEnum() {
+        return UserStatus.fromValue(this.status);
+    }
+}
