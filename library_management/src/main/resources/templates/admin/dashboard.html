@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/admin_layout}">
+<head>
+    <title>Hệ thống quản lý thư viện - Bảng điều khiển</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-section">
+                <h2 class="text-primary" id="welcome-message">Xin chào, Admin!</h2>
+                <p class="text-muted mb-0" id="current-datetime"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <i class="mdi mdi-account-multiple text-info icon-lg"></i>
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">Tổng thành viên</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">1,445</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-arrow-up mr-1 text-success" aria-hidden="true"></i> Tăng 15% so với tháng trước
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <i class="mdi mdi-book-multiple text-success icon-lg"></i>
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">Sách đang mượn</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">892</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-arrow-up mr-1 text-success" aria-hidden="true"></i> Tăng 8% so với tháng trước
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <i class="mdi mdi-clock-alert text-warning icon-lg"></i>
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">Sách quá hạn</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">35</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-arrow-down mr-1 text-success" aria-hidden="true"></i> Giảm 5% so với tháng trước
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
+            <div class="card card-statistics">
+                <div class="card-body">
+                    <div class="clearfix">
+                        <div class="float-left">
+                            <i class="mdi mdi-book-plus text-danger icon-lg"></i>
+                        </div>
+                        <div class="float-right">
+                            <p class="mb-0 text-right">Sách mới thêm</p>
+                            <div class="fluid-container">
+                                <h3 class="font-weight-medium text-right mb-0">127</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0">
+                        <i class="mdi mdi-arrow-up mr-1 text-success" aria-hidden="true"></i> Tăng 22% so với tháng trước
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users List & Books List -->
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title">Danh sách thành viên</h4>
+                        <button class="btn btn-primary btn-sm">Thêm thành viên</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên thành viên</th>
+                                <th>Chuyên ngành</th>
+                                <th>Tháng ĐK</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>TV001</td>
+                                <td>Nguyễn Văn A</td>
+                                <td>
+                                    <div class="badge badge-success">Công nghệ thông tin</div>
+                                </td>
+                                <td>Tháng 6</td>
+                                <td>Hoạt động</td>
+                            </tr>
+                            <tr>
+                                <td>TV002</td>
+                                <td>Trần Thị B</td>
+                                <td>
+                                    <div class="badge badge-warning">Kinh tế</div>
+                                </td>
+                                <td>Tháng 1</td>
+                                <td>Không hoạt động</td>
+                            </tr>
+                            <tr>
+                                <td>TV003</td>
+                                <td>Lê Văn C</td>
+                                <td>
+                                    <div class="badge badge-info">Tâm lý học</div>
+                                </td>
+                                <td>Tháng 12</td>
+                                <td>Hoạt động</td>
+                            </tr>
+                            <tr>
+                                <td>TV004</td>
+                                <td>Phạm Thị D</td>
+                                <td>
+                                    <div class="badge badge-danger">Văn học</div>
+                                </td>
+                                <td>Tháng 11</td>
+                                <td>Hoạt động</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <a href="#" class="text-primary">Xem tất cả</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title">Danh sách sách</h4>
+                        <button class="btn btn-success btn-sm">Thêm sách mới</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                            <tr>
+                                <th>Mã sách</th>
+                                <th>Tựa đề</th>
+                                <th>Tác giả</th>
+                                <th>Có sẵn</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>S001</td>
+                                <td>Clean Code</td>
+                                <td>Robert C. Martin</td>
+                                <td>8</td>
+                                <td>Có sẵn</td>
+                            </tr>
+                            <tr>
+                                <td>S002</td>
+                                <td>Lập trình Java</td>
+                                <td>Oracle Press</td>
+                                <td>0</td>
+                                <td>Hết sách</td>
+                            </tr>
+                            <tr>
+                                <td>S003</td>
+                                <td>Thiết kế UI/UX</td>
+                                <td>Don Norman</td>
+                                <td>15</td>
+                                <td>Có sẵn</td>
+                            </tr>
+                            <tr>
+                                <td>S004</td>
+                                <td>Tâm lý học đại cương</td>
+                                <td>David G. Myers</td>
+                                <td>3</td>
+                                <td>Ít sách</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <a href="#" class="text-primary">Xem tất cả</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Choices Books -->
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Sách được yêu thích nhất</h4>
+                    <div class="row">
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Clean Code" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Clean Code</p>
+                                <small class="text-muted">Robert C. Martin</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Java Programming" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Lập trình Java</p>
+                                <small class="text-muted">Oracle Press</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Design Thinking" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Tư duy thiết kế</p>
+                                <small class="text-muted">Tim Brown</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Data Science" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Khoa học dữ liệu</p>
+                                <small class="text-muted">John D. Kelleher</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Philosophy" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Triết học phương Tây</p>
+                                <small class="text-muted">Plato</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                            <div class="book-item text-center">
+                                <div class="book-cover">
+                                    <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+                                         alt="Literature" style="height: 120px; width: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                                <p class="mt-2 mb-0 small">Văn học Việt Nam</p>
+                                <small class="text-muted">Nguyễn Du</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Book List & Books Issued -->
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Danh sách sách quá hạn</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID TV</th>
+                                <th>Tên thành viên</th>
+                                <th>Mã sách</th>
+                                <th>Tựa đề</th>
+                                <th>Tác giả</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Số ngày</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>TV001</td>
+                                <td class="d-flex align-items-center">
+                                    <img class="img-xs rounded-circle mr-2" th:src="@{/images/faces/face1.jpg}" alt="profile">
+                                    Nguyễn Văn A
+                                </td>
+                                <td>S001</td>
+                                <td>Clean Code</td>
+                                <td>Robert C. Martin</td>
+                                <td>10/08/2025</td>
+                                <td><span class="badge badge-success">Đã trả hôm nay</span></td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>TV002</td>
+                                <td class="d-flex align-items-center">
+                                    <img class="img-xs rounded-circle mr-2" th:src="@{/images/faces/face2.jpg}" alt="profile">
+                                    Trần Thị B
+                                </td>
+                                <td>S002</td>
+                                <td>Lập trình Java</td>
+                                <td>Oracle Press</td>
+                                <td>01/08/2025</td>
+                                <td><span class="badge badge-danger">Quá hạn</span></td>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td>TV003</td>
+                                <td class="d-flex align-items-center">
+                                    <img class="img-xs rounded-circle mr-2" th:src="@{/images/faces/face3.jpg}" alt="profile">
+                                    Lê Văn C
+                                </td>
+                                <td>S003</td>
+                                <td>Thiết kế UI/UX</td>
+                                <td>Don Norman</td>
+                                <td>05/08/2025</td>
+                                <td><span class="badge badge-success">Đã trả hôm nay</span></td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>TV004</td>
+                                <td class="d-flex align-items-center">
+                                    <img class="img-xs rounded-circle mr-2" th:src="@{/images/faces/face4.jpg}" alt="profile">
+                                    Phạm Thị D
+                                </td>
+                                <td>S004</td>
+                                <td>Tâm lý học đại cương</td>
+                                <td>David G. Myers</td>
+                                <td>08/08/2025</td>
+                                <td><span class="badge badge-success">Được phê duyệt</span></td>
+                                <td>0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        <nav>
+                            <ul class="pagination pagination-sm">
+                                <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-left"></i></a></li>
+                                <li class="page-item active"><a class="page-link bg-danger border-danger text-white" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                <li class="page-item"><a class="page-link" href="#"><i class="mdi mdi-chevron-right"></i></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title">Sách được mượn gần đây</h4>
+                        <button class="btn btn-outline-primary btn-sm">Cho mượn sách</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                            <tr>
+                                <th>Mã mượn</th>
+                                <th>Sách</th>
+                                <th>Ngày mượn</th>
+                                <th>Hạn trả</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>M001</td>
+                                <td class="d-flex align-items-center">
+                                    <div class="book-mini bg-primary mr-2" style="width: 30px; height: 40px; border-radius: 3px;"></div>
+                                    <div>
+                                        Clean Code<br>
+                                        <small class="text-muted">Robert C. Martin</small>
+                                    </div>
+                                </td>
+                                <td>05/08/2025</td>
+                                <td>15/08/2025</td>
+                                <td><span class="badge badge-success">Đã trả</span></td>
+                            </tr>
+                            <tr>
+                                <td>M002</td>
+                                <td class="d-flex align-items-center">
+                                    <div class="book-mini bg-dark mr-2" style="width: 30px; height: 40px; border-radius: 3px;"></div>
+                                    <div>
+                                        Lập trình Java<br>
+                                        <small class="text-muted">Oracle Press</small>
+                                    </div>
+                                </td>
+                                <td>01/08/2025</td>
+                                <td>11/08/2025</td>
+                                <td><span class="badge badge-danger">Quá hạn</span></td>
+                            </tr>
+                            <tr>
+                                <td>M003</td>
+                                <td class="d-flex align-items-center">
+                                    <div class="book-mini bg-warning mr-2" style="width: 30px; height: 40px; border-radius: 3px;"></div>
+                                    <div>
+                                        Thiết kế UI/UX<br>
+                                        <small class="text-muted">Don Norman</small>
+                                    </div>
+                                </td>
+                                <td>03/08/2025</td>
+                                <td>13/08/2025</td>
+                                <td><span class="badge badge-success">Đã trả</span></td>
+                            </tr>
+                            <tr>
+                                <td>M004</td>
+                                <td class="d-flex align-items-center">
+                                    <div class="book-mini bg-success mr-2" style="width: 30px; height: 40px; border-radius: 3px;"></div>
+                                    <div>
+                                        Tâm lý học đại cương<br>
+                                        <small class="text-muted">David G. Myers</small>
+                                    </div>
+                                </td>
+                                <td>07/08/2025</td>
+                                <td>17/08/2025</td>
+                                <td><span class="badge badge-warning">Đang mượn</span></td>
+                            </tr>
+                            <tr>
+                                <td>M005</td>
+                                <td class="d-flex align-items-center">
+                                    <div class="book-mini bg-info mr-2" style="width: 30px; height: 40px; border-radius: 3px;"></div>
+                                    <div>
+                                        Khoa học dữ liệu<br>
+                                        <small class="text-muted">John D. Kelleher</small>
+                                    </div>
+                                </td>
+                                <td>09/08/2025</td>
+                                <td>19/08/2025</td>
+                                <td><span class="badge badge-success">Đã trả</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visitors & Borrowers Statistics -->
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title">Thống kê lượt thăm và mượn sách</h4>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-toggle="dropdown">
+                                Tháng này
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Tuần này</a>
+                                <a class="dropdown-item" href="#">Tháng này</a>
+                                <a class="dropdown-item" href="#">Năm này</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dashboard-area-chart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<style>
+    .welcome-section {
+        padding: 20px 0;
+    }
+
+    .book-cover {
+        font-size: 10px;
+        text-align: center;
+    }
+
+    .book-mini {
+        flex-shrink: 0;
+    }
+
+    .legend-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .pagination-sm .page-link {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        padding: 2px 6px;
+        border-radius: 50%;
+        font-size: 10px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .count-indicator {
+        position: relative;
+    }
+
+    .item-thumbnail {
+        margin-right: 12px;
+    }
+
+    .item-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .item-content h6 {
+        margin-bottom: 4px;
+        font-size: 14px;
+    }
+
+    .item-content p {
+        margin-bottom: 0;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .stretch-card > .card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .stretch-card > .card .card-body {
+        flex-grow: 1;
+    }
+</style>
