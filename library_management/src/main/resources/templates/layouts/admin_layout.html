@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Library Management System - Admin</title>
+    <link rel="stylesheet" th:href="@{/vendors/iconfonts/mdi/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/vendors/css/vendor.bundle.addons.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}"/>
+</head>
+
+<body>
+<div class="container-scroller">
+
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
+            <a class="navbar-brand brand-logo" th:href="@{/admin/dashboard}">
+                <img th:src="@{/images/logo.svg}" alt="Library Logo"/>
+            </a>
+            <a class="navbar-brand brand-logo-mini" th:href="@{/admin/dashboard}">
+                <img th:src="@{/images/logo-mini.svg}" alt="Library Logo"/>
+            </a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-center">
+            <button class="navbar-toggler navbar-toggler d-none d-lg-block navbar-dark align-self-center mr-3"
+                    type="button" data-toggle="minimize">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <ul class="navbar-nav navbar-nav-right">
+                <!-- Notification Dropdown -->
+                <li class="nav-item dropdown mr-2">
+                    <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+                       id="notificationDropdown" href="#" data-toggle="dropdown"
+                       aria-expanded="false">
+                        <i class="mdi mdi-bell mx-0"></i>
+                        <span class="count bg-danger">5</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
+                         aria-labelledby="notificationDropdown">
+                        <p class="mb-0 font-weight-bold dropdown-header h5 text-center">Thông báo
+                            thư viện</p>
+                        <a class="dropdown-item">
+                            <div class="item-content">
+                                <h6 class="font-weight-normal">Yêu cầu mượn sách mới</h6>
+                                <p class="font-weight-light small-text mb-0 text-muted">
+                                    Nguyễn Văn A yêu cầu mượn "Clean Code"
+                                </p>
+                            </div>
+                        </a>
+                        <a class="dropdown-item">
+                            <div class="item-content">
+                                <h6 class="font-weight-normal">Sách quá hạn</h6>
+                                <p class="font-weight-light small-text mb-0 text-muted">
+                                    "Java Programming" đã quá hạn 2 ngày
+                                </p>
+                            </div>
+                        </a>
+                        <a class="dropdown-item">
+                            <div class="item-content">
+                                <h6 class="font-weight-normal">Thành viên mới</h6>
+                                <p class="font-weight-light small-text mb-0 text-muted">
+                                    Trần Thị B đã đăng ký thành công
+                                </p>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-center font-weight-bold text-primary py-2">Xem
+                            tất cả thông báo</a>
+                    </div>
+                </li>
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown d-none d-xl-inline-block">
+                    <a class="nav-link dropdown-toggle" id="UserDropdown" href="#"
+                       data-toggle="dropdown" aria-expanded="false">
+                        <span class="profile-text">Xin chào, Admin!</span>
+                        <img class="img-xs rounded-circle" th:src="@{/images/faces/face1.jpg}"
+                             alt="Profile image">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
+                         aria-labelledby="UserDropdown">
+                        <a class="dropdown-item mt-2">
+                            <i class="mdi mdi-account mr-2"></i>
+                            Quản lý tài khoản
+                        </a>
+                        <a class="dropdown-item">
+                            <i class="mdi mdi-lock mr-2"></i>
+                            Đổi mật khẩu
+                        </a>
+                        <a class="dropdown-item">
+                            <i class="mdi mdi-logout mr-2"></i>
+                            Đăng xuất
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
+                    type="button" data-toggle="offcanvas">
+                <span class="icon-menu"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <ul class="nav">
+                <li class="nav-item nav-profile">
+                    <div class="nav-link">
+                        <div class="user-wrapper">
+                            <div class="profile-image">
+                                <img th:src="@{/images/faces/face1.jpg}" alt="profile image">
+                            </div>
+                            <div class="text-wrapper">
+                                <p class="profile-name">Quản lý thư viện</p>
+                                <div>
+                                    <small class="designation text-muted">Admin</small>
+                                    <span class="status-indicator online"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">
+                        <i class="menu-icon mdi mdi-view-dashboard"></i>
+                        <span class="menu-title">Bảng điều khiển</span>
+                    </a>
+                </li>
+
+                <!-- User Management -->
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#user-management"
+                       aria-expanded="false" aria-controls="user-management">
+                        <i class="menu-icon mdi mdi-account-multiple"></i>
+                        <span class="menu-title">Quản lý người dùng</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="user-management">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users}">Tất cả thành viên</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users/active}">Thành viên hoạt
+                                    động</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/users/inactive}">Thành viên
+                                    không hoạt động</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Book Management -->
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#book-management"
+                       aria-expanded="false" aria-controls="book-management">
+                        <i class="menu-icon mdi mdi-book-multiple"></i>
+                        <span class="menu-title">Quản lý sách</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="book-management">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/books}">Tất cả sách</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/books/add}">Thêm sách mới</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/books/categories}">Thể loại
+                                    sách</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Author Management -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/authors}">
+                        <i class="menu-icon mdi mdi-account-edit"></i>
+                        <span class="menu-title">Quản lý tác giả</span>
+                    </a>
+                </li>
+
+                <!-- Publisher Management -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/publishers}">
+                        <i class="menu-icon mdi mdi-domain"></i>
+                        <span class="menu-title">Nhà xuất bản</span>
+                    </a>
+                </li>
+
+                <!-- Borrow Requests -->
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#borrow-management"
+                       aria-expanded="false" aria-controls="borrow-management">
+                        <i class="menu-icon mdi mdi-book-open-page-variant"></i>
+                        <span class="menu-title">Quản lý mượn sách</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="borrow-management">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/borrow-requests}">Yêu cầu mượn
+                                    sách</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/borrowed-books}">Sách đang
+                                    mượn</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/overdue-books}">Sách quá
+                                    hạn</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Statistics & Reports -->
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="false"
+                       aria-controls="reports">
+                        <i class="menu-icon mdi mdi-chart-line"></i>
+                        <span class="menu-title">Báo cáo thống kê</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="reports">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/statistics}">Thống kê tổng
+                                    quan</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/export}">Xuất báo cáo</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- System Settings -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/settings}">
+                        <i class="menu-icon mdi mdi-settings"></i>
+                        <span class="menu-title">Cài đặt hệ thống</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- partial -->
+        <div class="main-panel">
+            <div class="content-wrapper" layout:fragment="content">
+                Content is Here!
+            </div>
+            <!-- content-wrapper ends -->
+
+            <!-- partial:partials/_footer.html -->
+            <footer class="footer">
+                <div class="container-fluid clearfix">
+                    <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2025
+                        <a href="#" target="_blank">Hệ thống quản lý thư viện</a>. All rights reserved.</span>
+                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with
+                        <i class="mdi mdi-heart text-danger"></i>
+                    </span>
+                </div>
+            </footer>
+            <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+
+    </div>
+
+    <!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller -->
+
+<!-- plugins:js -->
+<script th:src="@{/vendors/js/vendor.bundle.base.js}"></script>
+<script th:src="@{/vendors/js/vendor.bundle.addons.js}"></script>
+<script th:src="@{/js/off-canvas.js}"></script>
+<script th:src="@{/js/misc.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+
+</body>
+</html>
