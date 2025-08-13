@@ -35,19 +35,9 @@ public class Follow {
     private Integer targetId;
 
     @Column(name = "target_type", nullable = false)
-    private Integer targetType;
+    private FollowTargetType targetType;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-    public void setTargetType(FollowTargetType targetTypeEnum) {
-        if (targetTypeEnum != null) {
-            this.targetType = targetTypeEnum.getValue();
-        }
-    }
-
-    public FollowTargetType getTargetTypeEnum() {
-        return FollowTargetType.fromValue(this.targetType);
-    }
 }

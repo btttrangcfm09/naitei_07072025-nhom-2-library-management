@@ -27,21 +27,11 @@ public class Fine {
     private Integer id;
 
     @Column(nullable = false)
-    private Integer type;
+    private FineType type;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal fee;
 
-    @OneToMany(mappedBy = "fine")
+    @OneToMany(mappedBy = "fine", fetch = FetchType.LAZY)
     private List<ReceiptFine> receiptFines;
-
-    public void setType(FineType fineTypeEnum) {
-        if (fineTypeEnum != null) {
-            this.type = fineTypeEnum.getValue();
-        }
-    }
-
-    public FineType getTypeEnum() {
-        return FineType.fromValue(this.type);
-    }
 }
