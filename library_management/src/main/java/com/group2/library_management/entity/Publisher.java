@@ -1,7 +1,6 @@
 package com.group2.library_management.entity;
 
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -15,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Publisher extends Auditable{
+public class Publisher extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -39,7 +38,6 @@ public class Publisher extends Auditable{
 
     private String description;
 
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     public List<Edition> editions;
 }
-

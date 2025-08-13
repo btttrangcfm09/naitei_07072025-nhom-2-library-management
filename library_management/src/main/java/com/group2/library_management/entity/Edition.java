@@ -1,9 +1,10 @@
 package com.group2.library_management.entity;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+
 import com.group2.library_management.entity.enums.BookFormat;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -38,34 +39,28 @@ public class Edition {
     @Column(length = 255)
     private String coverImageUrl;
 
-    @Column(name = "initial_quantity",nullable = false)
+    @Column(name = "initial_quantity", nullable = false)
     private Integer initialQuantity;
 
     @Column(name = "available_quantity", nullable = false)
     private Integer availableQuantity;
 
-    private Integer format;
+    private BookFormat format;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publisher_id",referencedColumnName = "id")
+    @JoinColumn(name = "publisher_id", referencedColumnName = "id")
     private Publisher publisher;
 
-    @OneToMany(mappedBy = "edition",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "edition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "edition",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "edition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Rating> ratings;
 
-    @OneToMany(mappedBy = "edition",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "edition", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookInstance> bookInstances;
-
-    public String getFormatString(){
-        BookFormat bookFormat = BookFormat.fromValue(this.format);
-        return bookFormat.getFormatString();
-    }
 }
-

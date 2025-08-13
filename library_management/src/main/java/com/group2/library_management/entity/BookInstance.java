@@ -44,7 +44,7 @@ public class BookInstance {
     private BigDecimal acquiredPrice;
 
     @Column(nullable = false)
-    private Integer status;
+    private BookStatus status;
 
     @Column(columnDefinition = "TEXT")
     private String note;
@@ -54,14 +54,4 @@ public class BookInstance {
 
     @OneToMany(mappedBy = "bookInstance")
     private List<ReceiptFine> receiptFines;
-
-    public void setStatus(BookStatus statusEnum) {
-        if (statusEnum != null) {
-            this.status = statusEnum.getValue();
-        }
-    }
-
-    public BookStatus getStatusEnum() {
-        return BookStatus.fromValue(this.status);
-    }
 }

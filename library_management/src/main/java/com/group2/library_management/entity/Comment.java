@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Comment extends Auditable{
+public class Comment extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -18,12 +18,11 @@ public class Comment extends Auditable{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "edition_id",referencedColumnName = "id")
+    @JoinColumn(name = "edition_id", referencedColumnName = "id")
     private Edition edition;
-    
+
     @Column(nullable = false)
     private String content;
 }
-

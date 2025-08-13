@@ -39,24 +39,14 @@ public class BorrowingReceipt extends Auditable {
     private LocalDateTime dueDate;
 
     @Column(nullable = false)
-    private Integer status;
+    private BorrowingStatus status;
 
     @Column(name = "rejected_reason", columnDefinition = "TEXT")
     private String rejectedReason;
 
-    @OneToMany(mappedBy = "borrowingReceipt")
+    @OneToMany(mappedBy = "borrowingReceipt", fetch = FetchType.LAZY)
     private List<BorrowingDetail> borrowingDetails;
 
-    @OneToMany(mappedBy = "borrowingReceipt")
+    @OneToMany(mappedBy = "borrowingReceipt", fetch = FetchType.LAZY)
     private List<ReceiptFine> receiptFines;
-
-    public BorrowingStatus getStatusEnum() {
-        return BorrowingStatus.fromValue(this.status);
-    }
-
-    public void setStatus(BorrowingStatus statusEnum) {
-        if (statusEnum != null) {
-            this.status = statusEnum.getValue();
-        }
-    }
 }

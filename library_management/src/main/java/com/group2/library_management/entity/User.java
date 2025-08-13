@@ -50,40 +50,20 @@ public class User extends Auditable {
     private String address;
 
     @Column(nullable = false)
-    private Integer role;
+    private RoleType role;
 
     @Column(nullable = false)
-    private Integer status; 
+    private UserStatus status; 
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Follow> follows;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<BorrowingReceipt> borrowingReceipts;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Rating> ratings;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Comment> comments;
-
-    public void setRole(RoleType roleEnum) {
-        if (roleEnum != null) {
-            this.role = roleEnum.getValue();
-        }
-    }
-
-    public RoleType getRoleEnum() {
-        return RoleType.fromValue(this.role);
-    }
-
-    public void setStatus(UserStatus statusEnum) {
-        if (statusEnum != null) {
-            this.status = statusEnum.getValue();
-        }
-    }
-
-    public UserStatus getStatusEnum() {
-        return UserStatus.fromValue(this.status);
-    }
 }

@@ -18,14 +18,13 @@ public class Author extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 50,nullable = false)
+    @Column(length = 50, nullable = false)
     private String name;
 
     private LocalDate dob;
     private LocalDate dod;
     private String biography;
 
-    @OneToMany(mappedBy = "author",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     public List<AuthorBook> authorBooks;
 }
-

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Entity 
+@Entity
 @Table(name = "books")
 @Data
 @AllArgsConstructor
@@ -31,4 +31,3 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AuthorBook> authorBooks;
 }
-

@@ -1,6 +1,5 @@
 package com.group2.library_management.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
@@ -26,4 +25,3 @@ public class BookGenre {
     @JoinColumn(name = "genre_id", referencedColumnName = "id")
     private Genre genre;
 }
-
