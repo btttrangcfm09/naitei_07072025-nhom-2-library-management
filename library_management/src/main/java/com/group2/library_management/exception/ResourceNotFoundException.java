@@ -9,4 +9,8 @@ public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public ResourceNotFoundException(String resourceName, String columnName) {
+        super(String.format(columnName + " '" + resourceName + "' không tồn tại trong hệ thống."));
+    }
 }
