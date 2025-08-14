@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin_layout}">
+
+<head>
+    <title>Quản lý Yêu cầu Mượn sách</title>
+    <link rel="stylesheet" th:href="@{/css/borrowing-list.css}">
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="page-header">
+        <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-primary text-white mr-2"></span>
+            <i class="mdi mdi-book-open-page-variant mr-2"></i>
+            Quản lý Yêu cầu Mượn sách
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Bảng điều khiển</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Yêu cầu mượn sách</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tìm kiếm và Lọc</h4>
+                    <form th:action="@{/admin/borrow-requests}" method="get"
+                          class="form-inline mb-0">
+                        <div class="form-group mr-3 flex-grow-1">
+                            <input type="text" class="form-control w-100" name="keyword"
+                                   placeholder="Tìm theo tên hoặc email người mượn..."
+                                   th:value="${keyword}">
+                        </div>
+                        <div class="form-group mr-3">
+                            <select name="status" class="form-control" style="min-width: 180px;">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option th:each="st : ${allStatuses}"
+                                        th:value="${st.ordinal()}"
+                                        th:text="${statusDisplayNames.get(st)}"
+                                        th:selected="${currentStatus != null and currentStatus == st.ordinal()}">
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-gradient-primary mr-2">
+                            <i class="mdi mdi-magnify mr-2"></i>Tìm kiếm
+                        </button>
+                        <a th:href="@{/admin/borrow-requests}" class="btn btn-light">
+                            <i class="mdi mdi-refresh mr-2"></i>Làm mới
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0">Danh sách yêu cầu</h4>
+                        <span class="text-muted"
+                              th:if="${borrowingPage != null and !borrowingPage.empty}">
+                            Tổng cộng: <strong>[[${borrowingPage.totalElements}]]</strong> yêu cầu
+                        </span>
+                    </div>
+
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th style="width: 6%;">#</th>
+                            <th style="width: 28%;">Người mượn</th>
+                            <th style="width: 16%;">Ngày yêu cầu</th>
+                            <th style="width: 22%;" class="text-center">Ngày hẹn lấy / Hạn trả</th>
+                            <th style="width: 16%;">Trạng thái</th>
+                            <th style="width: 12%;" class="text-center">Chi tiết</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${borrowingPage == null or borrowingPage.empty}">
+                            <td colspan="6" class="text-center py-5">
+                                <i class="mdi mdi-alert-circle-outline mdi-36px text-muted"></i>
+                                <p class="text-muted mt-2">Không có yêu cầu nào phù hợp.</p>
+                            </td>
+                        </tr>
+                        <tr th:each="receipt, iterStat : ${borrowingPage.content}">
+                            <td th:text="${borrowingPage.number * borrowingPage.size + iterStat.count}"></td>
+                            <td>
+                                <strong th:text="${receipt.borrowerName()}"></strong><br>
+                                <small class="text-muted"
+                                       th:text="${receipt.borrowerEmail()}"></small>
+                            </td>
+                            <td>
+                                <div th:text="${#temporals.format(receipt.requestDate(), 'dd/MM/yyyy')}"></div>
+                                <small class="text-muted"
+                                       th:text="${#temporals.format(receipt.requestDate(), 'HH:mm:ss')}"></small>
+                            </td>
+                            <td class="text-center">
+                                <div><i class="mdi mdi-calendar-arrow-right text-success"></i> Lấy:
+                                    <strong th:text="${receipt.borrowedDate() != null ? #temporals.format(receipt.borrowedDate(), 'dd/MM/yy') : 'N/A'}"></strong>
+                                </div>
+                                <div><i class="mdi mdi-calendar-arrow-left text-danger"></i> Trả:
+                                    <strong th:text="${receipt.dueDate() != null ? #temporals.format(receipt.dueDate(), 'dd/MM/yy') : 'N/A'}"></strong>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="badge"
+                                       th:classappend="${#strings.toString(receipt.status()) == 'PENDING' ? 'badge-warning' : #strings.toString(receipt.status()) == 'APPROVED' ? 'badge-success' : #strings.toString(receipt.status()) == 'REJECTED' ? 'badge-danger' : #strings.toString(receipt.status()) == 'RETURNED' ? 'badge-info' : #strings.toString(receipt.status()) == 'BORROWED' ? 'badge-primary' : #strings.toString(receipt.status()) == 'OVERDUE' ? 'badge-dark' : 'badge-secondary'}"
+                                       th:text="${statusDisplayNames.get(receipt.status())}"></label>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="action-view text-info" title="Xem chi tiết">
+                                    <i class="mdi mdi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <nav aria-label="Page navigation" class="mt-4"
+                         th:if="${borrowingPage != null and borrowingPage.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item"
+                                th:classappend="${borrowingPage.first ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/borrow-requests(page=${borrowingPage.number}, size=${borrowingPage.size}, keyword=${keyword}, status=${currentStatus})}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(0, borrowingPage.totalPages - 1)}"
+                                th:if="${i >= borrowingPage.number - 2 and i <= borrowingPage.number + 2}"
+                                class="page-item"
+                                th:classappend="${i == borrowingPage.number ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/borrow-requests(page=${i + 1}, size=${borrowingPage.size}, keyword=${keyword}, status=${currentStatus})}"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item"
+                                th:classappend="${borrowingPage.last ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/borrow-requests(page=${borrowingPage.number + 2}, size=${borrowingPage.size}, keyword=${keyword}, status=${currentStatus})}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
