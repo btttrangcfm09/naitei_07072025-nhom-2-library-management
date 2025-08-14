@@ -65,6 +65,24 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.CONFLICT.value(),
+            errorResponse,
+            "Xung đột dữ liệu khi tạo tài khoản"
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+
     // xử lý lỗi khác (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseApiResponse<ErrorResponse>> handleGeneralException(Exception ex, HttpServletRequest request) {
