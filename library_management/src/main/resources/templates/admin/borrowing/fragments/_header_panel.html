@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="headerPanel(receipt)">
+    <div class="page-header">
+        <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                <i class="mdi mdi-file-document-box-search-outline"></i>
+            </span>
+            <span th:text="#{admin.borrowing.detail.title}">Chi Tiết Phiếu Mượn</span> #<span th:text="${receipt.id()}"></span>
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" th:text="#{admin.breadcrumb.dashboard}">Bảng điều khiển</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/borrow-requests}" th:text="#{admin.breadcrumb.borrow_requests}">Yêu cầu mượn sách</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="#{admin.breadcrumb.detail}">Chi tiết</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+</body>
+</html>

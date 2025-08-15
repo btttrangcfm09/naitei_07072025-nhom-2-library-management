@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="infoPanel(receipt)">
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" th:text="#{admin.borrowing.info.general_title}">Thông Tin Chung Về Phiếu Mượn</h4>
+                    <p><strong th:text="#{admin.borrowing.info.receipt_id}">Mã phiếu mượn:</strong> <span th:text="${receipt.id()}"></span></p>
+                    <p><strong th:text="#{admin.borrowing.info.status}">Trạng thái:</strong>
+                        <span class="badge"
+                              th:classappend="${receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).PENDING ? 'badge-warning' :
+                              receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).APPROVED ? 'badge-success' :
+                              receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).REJECTED ? 'badge-danger' :
+                              receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).RETURNED ? 'badge-info' :
+                              receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED ? 'badge-primary' :
+                              receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE ? 'badge-dark' : 'badge-secondary'}"
+                              th:text="${@enumDisplayService.getBorrowingStatusDisplayName(receipt.status())}"></span>
+                    </p>
+                    <div th:if="${receipt.status.name() == 'REJECTED' and receipt.rejectedReason() != null and !receipt.rejectedReason().isBlank()}">
+                        <p class="text-danger mb-0"><strong th:text="#{admin.borrowing.info.rejected_reason}">Lý do từ chối:</strong></p>
+                        <p class="text-dark" style="white-space: pre-wrap;"
+                           th:text="${receipt.rejectedReason()}"></p>
+                    </div>
+                    <p><strong th:text="#{admin.borrowing.info.request_date}">Ngày yêu cầu:</strong> <span
+                            th:text="${#temporals.format(receipt.requestDate(), 'HH:mm, dd/MM/yyyy')}"></span>
+                    </p>
+                    <p><strong th:text="#{admin.borrowing.info.updated_date}">Ngày cập nhật cuối:</strong> <span
+                            th:text="${receipt.updatedAt() != null ? #temporals.format(receipt.updatedAt(), 'HH:mm, dd/MM/yyyy') : 'N/A'}"></span>
+                    </p>
+                    <p><strong th:text="#{admin.borrowing.info.borrowed_date}">Ngày hẹn lấy:</strong> <span
+                            th:text="${receipt.borrowedDate() != null ? #temporals.format(receipt.borrowedDate(), 'dd/MM/yyyy') : 'Chưa xác định'}"></span>
+                    </p>
+                    <p><strong th:text="#{admin.borrowing.info.due_date}">Hạn trả:</strong> <span
+                            th:text="${receipt.dueDate() != null ? #temporals.format(receipt.dueDate(), 'dd/MM/yyyy') : 'Chưa xác định'}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" th:text="#{admin.borrowing.info.borrower_title}">Thông Tin Người Mượn</h4>
+                    <p><strong th:text="#{admin.borrowing.info.borrower_name}">Họ tên:</strong> <span th:text="${receipt.borrowerName()}"></span>
+                    </p>
+                    <p><strong>Email:</strong> <a th:href="'mailto:' + ${receipt.borrowerEmail()}"
+                                                  th:text="${receipt.borrowerEmail()}"></a></p>
+                    <p><strong th:text="#{admin.borrowing.info.borrower_profile}">Hồ sơ người dùng:</strong> <a
+                            th:href="@{'/admin/users/' + ${receipt.borrowerId()}}" th:text="#{admin.borrowing.info.view_profile}">Xem hồ sơ</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>404 - Không Tìm Thấy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/error-page.css}">
+</head>
+<body>
+<div class="error-container">
+    <div>
+        <h1 class="display-1 font-weight-bold text-primary">404</h1>
+        <p class="h2">Không Tìm Thấy Trang</p>
+        <p class="text-muted lead" th:text="${errorMessage}">
+            Tài nguyên bạn yêu cầu không có sẵn hoặc đã bị xóa.
+        </p>
+        <a th:href="@{/admin/borrow-requests}" class="btn btn-primary btn-lg mt-4">
+            Quay lại Danh sách
+        </a>
+    </div>
+</div>
+</body>
+</html>

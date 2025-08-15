@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="bookListPanel(receipt)">
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" th:text="#{admin.borrowing.books.title}">Danh Sách Các Sách Được Yêu Cầu</h4>
+                    <div>
+                        <table class="table table-hover book-info-table">
+                            <thead>
+                            <tr>
+                                <th class="col-title" th:text="#{admin.borrowing.books.table.book_name}">Tên sách</th>
+                                <th class="col-isbn">ISBN</th>
+                                <th class="col-barcode" th:text="#{admin.borrowing.books.table.barcode}">Mã vạch</th>
+                                <th class="col-status" th:text="#{admin.borrowing.books.table.status}">Trạng thái</th>
+                                <th class="col-location" th:text="#{admin.borrowing.books.table.location}">Vị trí</th>
+                                <th class="col-price" th:text="#{admin.borrowing.books.table.price}">Giá sách</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${receipt.borrowingDetails() == null or #lists.isEmpty(receipt.borrowingDetails())}">
+                                <td colspan="6" class="text-center py-3" th:text="#{admin.borrowing.books.no_books}">Không có cuốn sách nào
+                                    trong phiếu mượn này.
+                                </td>
+                            </tr>
+                            <tr th:each="detail : ${receipt.borrowingDetails()}">
+                                <td class="col-title">
+                                    <a th:href="@{/admin/editions/{id}(id=${detail.editionId()})}"
+                                       th:text="${detail.title()}"
+                                       target="_blank"
+                                       th:title="#{admin.borrowing.books.view_detail}"></a>
+                                </td>
+                                <td class="col-isbn" th:text="${detail.isbn()}"></td>
+                                <td class="col-barcode" th:text="${detail.barcode()}"></td>
+                                <td class="col-status">
+                                     <span class="badge"
+                                           th:classappend="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE ? 'badge-success' :
+                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).BORROWED ? 'badge-primary' : 'badge-secondary'}"
+                                           th:text="${@enumDisplayService.getBookStatusDisplayName(detail.status())}"></span>
+                                </td>
+                                <td class="col-location" th:text="${detail.callNumber()}"></td>
+                                <td class="col-price"
+                                    th:text="${detail.acquiredPrice() != null ? #numbers.formatDecimal(detail.acquiredPrice(), 0, 'COMMA', 0, 'POINT') + '₫' : 'N/A'}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin_layout}">
+
+<head>
+    <title th:text="#{admin.borrowing.detail.page_title}">Chi Tiết Phiếu Mượn</title>
+    <th:block layout:fragment="css">
+        <link th:href="@{/css/borrow-receipt-detail.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div th:replace="~{admin/borrowing/fragments/_header_panel :: headerPanel(${receipt})}"></div>
+
+    <div th:replace="~{admin/borrowing/fragments/_info_panel :: infoPanel(${receipt})}"></div>
+
+    <div th:replace="~{admin/borrowing/fragments/_book_list_panel :: bookListPanel(${receipt})}"></div>
+
+
+    <div th:replace="~{admin/borrowing/fragments/_action_panel :: actionPanel(${receipt})}"></div>
+
+</div>
+</body>
+</html>

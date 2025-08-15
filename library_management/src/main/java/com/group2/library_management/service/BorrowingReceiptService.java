@@ -8,4 +8,6 @@ import org.springframework.data.domain.Pageable;
 public interface BorrowingReceiptService {
     Page<BorrowingReceiptResponse> getAllBorrowingRequests(String keyword, BorrowingStatus status
             , Pageable pageable);
+
+    BorrowingReceiptResponse getBorrowingRequestById(Integer id);
 }
