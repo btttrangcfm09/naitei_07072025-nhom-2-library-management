@@ -182,6 +182,30 @@
                     </div>
                 </li>
 
+                <!-- Book Instance Management -->
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#book-instance-management"
+                       aria-expanded="false" aria-controls="book-instance-management">
+                        <i class="menu-icon mdi mdi-book-multiple"></i>
+                        <span class="menu-title">Quản lý sách vật lý</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="book-instance-management">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/bookinstances}">Tất cả sách</a>
+                            </li>
+                            <!-- <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/books/add}">Thêm sách mới</a>
+                            </li> -->
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/bookinstances/categories}">Thể loại
+                                    sách</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
                 <!-- Author Management -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/admin/authors}">

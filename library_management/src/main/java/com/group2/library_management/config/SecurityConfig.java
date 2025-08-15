@@ -49,7 +49,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
-
+/** 
     @Bean
     @Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -82,4 +82,5 @@ public class SecurityConfig {
             });
         return http.build();
     }
+**/
 }

@@ -1,8 +1,11 @@
 package com.group2.library_management.exception;
 
+import java.io.IOException;
+
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,5 +27,46 @@ public class WebExceptionHandler {
         mav.addObject("message", ex.getMessage());
         mav.setViewName("404");
         return mav;
+    }
+
+    @ExceptionHandler(ImportValidationException.class)
+    public String handleImportValidationWebException(
+            ImportValidationException ex, 
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) { // Thêm HttpServletRequest vào tham số
+
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        redirectAttributes.addFlashAttribute("validationErrors", ex.getErrors());
+        
+        // Lấy URL của trang mà người dùng đã gửi request từ đó (Referer Header)
+        String referer = request.getHeader("Referer");
+
+        // Kiểm tra xem Referer có tồn tại không để tránh lỗi
+        if (referer != null && !referer.isEmpty()) {
+            // Chuyển hướng người dùng về lại đúng trang họ vừa ở
+            return "redirect:" + referer;
+        }
+        // Nếu không lấy được Referer, chuyển hướng về một trang mặc định an toàn
+        return "redirect:/"; 
+    }
+
+    @ExceptionHandler(IOException.class)
+    public String handleIOException(
+                IOException ex, 
+                RedirectAttributes redirectAttributes,
+                HttpServletRequest request) { // Thêm HttpServletRequest vào tham số
+
+        redirectAttributes.addFlashAttribute("errorMessage", "error.file.process" + ex.getMessage());
+        
+        // Lấy URL của trang mà người dùng đã gửi request từ đó (Referer Header)
+        String referer = request.getHeader("Referer");
+
+        // Kiểm tra xem Referer có tồn tại không để tránh lỗi
+        if (referer != null && !referer.isEmpty()) {
+            // Chuyển hướng người dùng về lại đúng trang họ vừa ở
+            return "redirect:" + referer;
+        }
+        // Nếu không lấy được Referer, chuyển hướng về một trang mặc định an toàn
+        return "redirect:/"; 
     }
 }
