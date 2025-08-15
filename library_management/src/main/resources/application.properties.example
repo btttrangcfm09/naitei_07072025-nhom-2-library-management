@@ -26,3 +26,7 @@ spring.thymeleaf.suffix=.html
 spring.thymeleaf.mode=HTML
 spring.thymeleaf.encoding=UTF-8
 spring.thymeleaf.cache=false
+
+#Đảm bảo Spring Boot tự load file messages.
+spring.messages.basename=messages
+spring.messages.encoding=UTF-8
