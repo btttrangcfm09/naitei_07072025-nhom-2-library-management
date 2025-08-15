@@ -1,51 +1,75 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
-      layout:decorate="~{layouts/admin_layout}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin_layout}">
+
 <head>
     <title>Library Management System - Tất cả sách</title>
 </head>
 
 <body>
     <div layout:fragment="content">
-        <div class="row">
-            <div class="col-md-12 grid-margin">
-                <div class="d-flex justify-content-between align-items-center">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <!-- Khối 1: Tiêu đề và Breadcrumb (Không thay đổi) -->
+            <div>
+                <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                    </span>
+                    <!-- Thay thế văn bản cứng bằng key i18n -->
+                    <span th:text="#{bookinstances.title.page}">Quản lý sách vật lý</span>
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <!-- Thay thế "Trang chủ" -->
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/admin/dashboard}" th:text="#{breadcrumb.home}">Trang chủ</a>
+                        </li>
+                        <!-- Thay thế "Tất cả sách" -->
+                        <li class="breadcrumb-item active" aria-current="page"
+                            th:text="#{breadcrumb.bookinstances.all}">
+                            Tất cả sách
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Khối 2: Các nút bấm và thông báo -->
+            <div>
+                <!-- Bọc các nút bấm vào một div để chúng luôn nằm cùng hàng -->
+                <div class="d-flex align-items-center">
+                    <form th:action="@{/admin/bookinstances/import}" method="post" enctype="multipart/form-data"
+                        id="importForm" style="display:inline;">
+                        <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" style="display:none;"
+                            onchange="document.getElementById('importForm').submit();">
+                        <button type="button" class="btn btn-primary btn-icon-text"
+                            onclick="document.getElementById('fileInput').click();">
+                            <i class="mdi mdi-plus-circle"></i> Import excel sách mới
+                        </button>
+                    </form>
+                    <!-- Link tải file mẫu-->
+                    <a th:href="@{../../excel-templates/mau-import-sach.xlsx}" download="mau-import-sach.xlsx"
+                        class="btn btn-outline-success btn-icon-text ms-2">
+                        <i class="mdi mdi-download"></i> Tải file mẫu
+                    </a>
+                </div>
+
+                <!-- Các khối thông báo sẽ nằm bên dưới các nút bấm -->
+                <!--Hiện thị box thông báo lỗi-->
+                <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-start mt-3" role="alert"
+                    style="min-width: 300px;">
+                    <i class="mdi mdi-alert-circle-outline me-2" style="font-size: 1.2rem;"></i>
                     <div>
-                        <h4 class="font-weight-bold mb-0">Quản lý sách vật lý</h4>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang chủ</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Tất cả sách</li>
-                            </ol>
-                        </nav>
+                        <p class="fw-bold mb-1" th:text="${errorMessage}"></p>
+                        <ul th:if="${validationErrors}" class="mb-0 ps-3">
+                            <li th:each="err : ${validationErrors}" th:text="${err}"></li>
+                        </ul>
                     </div>
-                    <div>
-                        <form th:action="@{/admin/bookinstances/import}" method="post" enctype="multipart/form-data" id="importForm" style="display:inline;">
-                            <input type="file" name="file" id="fileInput" accept=".xlsx,.xls" style="display:none;" onchange="document.getElementById('importForm').submit();">
-                            <button type="button" class="btn btn-primary btn-icon-text" onclick="document.getElementById('fileInput').click();">
-                                <i class="mdi mdi-plus-circle"></i> Import excel sách mới
-                            </button>
-                        </form>
-                        <!-- Link tải file mẫu-->
-                        <a th:href="@{../../excel-templates/mau-import-sach.xlsx}" download="mau-import-sach.xlsx" class="btn btn-outline-success btn-icon-text ms-2">
-                            <i class="mdi mdi-download"></i> Tải file mẫu
-                        </a>
-                        <!--Hiện thị box thông báo lỗi-->
-                        <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-start mt-3" role="alert">
-                            <i class="mdi mdi-alert-circle-outline me-2" style="font-size: 1.2rem;"></i>
-                            <div>
-                                <p class="fw-bold mb-1" th:text="${errorMessage}"></p>
-                                <ul th:if="${validationErrors}" class="mb-0 ps-3">
-                                    <li th:each="err : ${validationErrors}" th:text="${err}"></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- Hiện thị thông báo thành công-->
-                        <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center mt-3" role="alert">
-                            <i class="mdi mdi-check-circle-outline me-2" style="font-size: 1.2rem;"></i>
-                            <div th:text="${successMessage}"></div>
-                        </div>
-                    </div>
+                </div>
+                <!-- Hiện thị thông báo thành công-->
+                <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center mt-3" role="alert"
+                    style="min-width: 300px;">
+                    <i class="mdi mdi-check-circle-outline me-2" style="font-size: 1.2rem;"></i>
+                    <div th:text="${successMessage}"></div>
                 </div>
             </div>
         </div>
@@ -59,7 +83,8 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>Tìm kiếm</label>
-                                    <input type="text" class="form-control search-box" placeholder="Nhập ISBN, Barcode hoặc Call Number...">
+                                    <input type="text" class="form-control search-box"
+                                        placeholder="Nhập ISBN, Barcode hoặc Call Number...">
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -119,7 +144,7 @@
                                 </button> -->
                             </div>
                         </div>
-                        
+
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead class="bg-light">
@@ -245,7 +270,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <!-- Phân trang -->
                         <div class="d-flex justify-content-between align-items-center mt-3">
                             <div>
@@ -285,11 +310,11 @@
 
     <!-- JavaScript cho tương tác -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Tìm kiếm realtime
             const searchInput = document.querySelector('.search-box');
             if (searchInput) {
-                searchInput.addEventListener('input', function() {
+                searchInput.addEventListener('input', function () {
                     // Implement search logic here
                     console.log('Tìm kiếm: ' + this.value);
                 });
@@ -297,7 +322,7 @@
 
             // Xử lý các nút action
             document.querySelectorAll('.btn-outline-primary').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (this.getAttribute('title') === 'Xem chi tiết') {
                         console.log('Xem chi tiết sách');
                     }
@@ -305,7 +330,7 @@
             });
 
             document.querySelectorAll('.btn-outline-warning').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (this.getAttribute('title') === 'Chỉnh sửa') {
                         console.log('Chỉnh sửa sách');
                     }
@@ -313,7 +338,7 @@
             });
 
             document.querySelectorAll('.btn-outline-danger').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     if (this.getAttribute('title') === 'Xóa') {
                         if (confirm('Bạn có chắc chắn muốn xóa sách này?')) {
                             console.log('Xóa sách');
@@ -324,4 +349,5 @@
         });
     </script>
 </body>
+
 </html>
