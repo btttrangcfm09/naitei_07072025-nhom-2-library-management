@@ -56,7 +56,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> {
                 authorize
-                    .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/access-denied").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/login", "/access-denied", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();
             })

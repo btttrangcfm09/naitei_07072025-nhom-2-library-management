@@ -1,0 +1,8 @@
+package com.group2.library_management.service;
+
+import com.group2.library_management.dto.request.RegisterRequest;
+import com.group2.library_management.dto.response.UserResponse;
+
+public interface AuthService {
+    UserResponse register(RegisterRequest request);
+}
