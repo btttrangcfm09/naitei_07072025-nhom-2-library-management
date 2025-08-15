@@ -192,13 +192,55 @@ public class ApiExceptionHandler {
             errorMessage, 
             request.getRequestURI()
         );
-
+        
         BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
             HttpStatus.NOT_FOUND.value(),
             errorResponse,
             errorTitle
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleRefreshTokenExpiredException(RefreshTokenExpiredException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.refresh_token.expired");
+        String errorTitle = getMessage("error.title.refresh_token.failed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.FORBIDDEN.value(),
+            HttpStatus.FORBIDDEN.getReasonPhrase(),
+            errorMessage,
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.FORBIDDEN.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleRefreshTokenNotFoundException(RefreshTokenNotFoundException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.refresh_token.not_found");
+        String errorTitle = getMessage("error.title.refresh_token.failed"); 
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.FORBIDDEN.value(),
+            HttpStatus.FORBIDDEN.getReasonPhrase(),
+            errorMessage,
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.FORBIDDEN.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
     }
 
     // xử lý lỗi khác (fallback)
