@@ -3,7 +3,6 @@ package com.group2.library_management.service.impl;
 import com.group2.library_management.entity.RefreshToken;
 import com.group2.library_management.entity.User;
 import com.group2.library_management.exception.UserNotFoundException;
-import com.group2.library_management.exception.RefreshTokenExpiredException;
 import com.group2.library_management.repository.RefreshTokenRepository;
 import com.group2.library_management.repository.UserRepository;
 import com.group2.library_management.service.RefreshTokenService;
@@ -61,5 +60,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         token.setToken(UUID.randomUUID().toString());
         token.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         return refreshTokenRepository.save(token);
+    }
+
+    /**
+     * Tìm và xóa refresh token theo người dùng.
+     * @param user người dùng
+     * @return Số lượng bản ghi đã được xóa
+     */
+    @Transactional
+    @Override
+    public int deleteByUser(User user) {
+        return refreshTokenRepository.deleteByUser(user);        
     }
 }
