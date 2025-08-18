@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin_layout}">
+
+<head>
+    <title th:text="#{admin.books.page_title}"></title>
+    <link rel="stylesheet" th:href="@{/css/book-list.css}">
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="page-header">
+        <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                <i class="mdi mdi-book-open-page-variant"></i>
+            </span>
+            <span th:text="#{admin.books.header_title}"></span>
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" th:text="#{admin.breadcrumb.dashboard}"></a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="#{admin.breadcrumb.all_books}"></li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Form Tìm kiếm -->
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title" th:text="#{admin.books.search.card_title}"></h4>
+                    <form th:action="@{/admin/books}" method="get" class="form-inline mb-0">
+                        <div class="form-group mr-3 flex-grow-1">
+                            <input type="text" class="form-control w-100" name="keyword"
+                                   th:placeholder="#{admin.books.search.placeholder}"
+                                   th:value="${keyword}">
+                        </div>
+                        <button type="submit" class="btn btn-gradient-primary mr-2">
+                            <i class="mdi mdi-magnify mr-2"></i><span th:text="#{admin.books.button.search}"></span>
+                        </button>
+                        <a th:href="@{/admin/books}" class="btn btn-light">
+                            <i class="mdi mdi-refresh mr-2"></i><span th:text="#{admin.books.button.reset}"></span>
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng Danh sách -->
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0" th:text="#{admin.books.list.card_title}"></h4>
+                        <span class="text-muted" th:if="${bookPage != null and !bookPage.empty}">
+                            <span th:text="#{admin.books.total.prefix}"></span> <strong>[[${bookPage.totalElements}]]</strong> <span th:text="#{admin.books.total.suffix}"></span>
+                        </span>
+                    </div>
+
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th th:text="#{admin.books.table.header.index}"></th>
+                            <th th:text="#{admin.books.table.header.title}"></th>
+                            <th th:text="#{admin.books.table.header.author}"></th>
+                            <th th:text="#{admin.books.table.header.genre}"></th>
+                            <th class="text-center" th:text="#{admin.books.table.header.edition}"></th>
+                            <th class="text-center" th:text="#{admin.books.table.header.actions}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${bookPage == null or bookPage.empty}">
+                            <td colspan="6" class="text-center py-5">
+                                <i class="mdi mdi-alert-circle-outline mdi-36px text-muted"></i>
+                                <p class="text-muted mt-2" th:text="#{admin.books.message.no_results}"></p>
+                            </td>
+                        </tr>
+                        <tr th:each="book, iterStat : ${bookPage.content}">
+                            <td th:text="${bookPage.number * bookPage.size + iterStat.count}"></td>
+                            <td th:text="${book.title()}"></td>
+                            <td>
+                                <span th:each="author, authorStat : ${book.authors()}"
+                                      th:text="${author} + (${!authorStat.last} ? ', ' : '')"></span>
+                            </td>
+                            <td>
+                                <span th:each="genre, genreStat : ${book.genres()}"
+                                      th:text="${genre} + (${!genreStat.last} ? ', ' : '')"></span>
+                            </td>
+                            <td class="text-center">
+                                <div>
+                                    <a href="#" class="btn btn-sm btn-outline-primary" th:text="#{admin.books.button.view_editions(${book.editionCount()})}">
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="action-edit text-warning" th:title="#{admin.books.tooltip.edit}">
+                                    <i class="mdi mdi-pencil icon-large"></i>
+                                </a>
+                                <a href="#" class="action-delete text-danger" th:title="#{admin.books.tooltip.delete}">
+                                    <i class="mdi mdi-delete icon-large"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Phân trang -->
+                    <nav aria-label="Page navigation" class="mt-4"
+                         th:if="${bookPage != null and bookPage.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${bookPage.first ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/books(page=${bookPage.number}, size=${bookPage.size}, keyword=${keyword})}">
+                                    <span>&laquo;</span>
+                                </a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(0, bookPage.totalPages - 1)}"
+                                th:if="${i >= bookPage.number - 2 and i <= bookPage.number + 2}"
+                                class="page-item" th:classappend="${i == bookPage.number ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/admin/books(page=${i + 1}, size=${bookPage.size}, keyword=${keyword})}"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${bookPage.last ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/books(page=${bookPage.number + 2}, size=${bookPage.size}, keyword=${keyword})}">
+                                    <span>&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
