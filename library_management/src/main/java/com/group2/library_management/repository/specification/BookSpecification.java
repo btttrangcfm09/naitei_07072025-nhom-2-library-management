@@ -18,12 +18,10 @@ import com.group2.library_management.entity.Book;
 import com.group2.library_management.entity.BookGenre;
 
 public class BookSpecification {
-
+    
     /**
-     * Tiêu chí: Tìm kiếm `keyword` trong TITLE của sách HOẶC trong NAME của tác
-     * giả.
+     * Tiêu chí: Tìm kiếm `keyword` trong TITLE của sách HOẶC trong NAME của tác giả.
      * Tìm kiếm không phân biệt hoa thường và bỏ qua khoảng trắng thừa.
-     * 
      * @param keyword Chuỗi tìm kiếm
      * @return Specification
      */
@@ -40,13 +38,12 @@ public class BookSpecification {
             // Sử dụng LEFT JOIN để không loại bỏ những cuốn sách chưa có tác giả.
             Join<Book, AuthorBook> authorBookJoin = root.join("authorBooks", JoinType.LEFT);
             Join<AuthorBook, Author> authorJoin = authorBookJoin.join("author", JoinType.LEFT);
-
+            
             // Điều kiện 1: title LIKE %keyword% (không phân biệt hoa thường)
             Predicate titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), pattern);
 
             // Điều kiện 2: author.name LIKE %keyword% (không phân biệt hoa thường)
-            Predicate authorNamePredicate = criteriaBuilder.like(criteriaBuilder.lower(authorJoin.get("name")),
-                    pattern);
+            Predicate authorNamePredicate = criteriaBuilder.like(criteriaBuilder.lower(authorJoin.get("name")), pattern);
 
             query.distinct(true);
 

@@ -1,11 +1,16 @@
 package com.group2.library_management.dto.mapper;
 
+import com.group2.library_management.dto.response.BookDetailResponse;
 import com.group2.library_management.dto.response.BookResponse;
+import com.group2.library_management.dto.response.EditionSummaryResponse;
 import com.group2.library_management.entity.Author;
 import com.group2.library_management.entity.AuthorBook;
 import com.group2.library_management.entity.Book;
 import com.group2.library_management.entity.BookGenre;
+import com.group2.library_management.entity.BookInstance;
+import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.Genre;
+import com.group2.library_management.entity.enums.BookStatus;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,14 +20,12 @@ import org.mapstruct.ReportingPolicy;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(
-    componentModel = "spring", 
-    unmappedTargetPolicy = ReportingPolicy.IGNORE 
-)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BookMapper {
 
     /**
      * Chuyển đổi từ Book entity sang BookResponse DTO.
+     * 
      * @param book Entity Book
      * @return DTO BookResponse
      */
@@ -57,5 +60,37 @@ public interface BookMapper {
                 .map(BookGenre::getGenre)
                 .map(Genre::getName)
                 .toList();
+    }
+
+    /**
+     * Chuyển đổi từ Book entity sang BookDetailResponse DTO.
+     * 
+     * @param book Entity Book
+     * @return DTO BookDetailResponse
+     */
+    @Mapping(source = "authorBooks", target = "authors", qualifiedByName = "authorBooksToAuthorNames")
+    @Mapping(source = "bookGenres", target = "genres", qualifiedByName = "bookGenresToGenreNames")
+    BookDetailResponse toBookDetailResponse(Book book);
+
+    @Mapping(source = "publisher.name", target = "publisher")
+    @Mapping(source = "publicationDate", target = "publicationDate", dateFormat = "dd-MM-yyyy")
+    @Mapping(source = "bookInstances", target = "bookinstanceCount", qualifiedByName = "countAvailableInstances")
+    EditionSummaryResponse toEditionSummaryResponse(Edition edition);
+
+    /**
+     * Phương thức dùng để đếm các BookInstance có status là AVAILABLE.
+     * 
+     * @param bookInstances danh sách tất cả các bản sách vật lý của một edition.
+     * @return số lượng bản sách vật lý có sẵn.
+     */
+    @Named("countAvailableInstances")
+    default Integer countAvailableInstances(List<BookInstance> bookInstances) {
+        if (bookInstances == null || bookInstances.isEmpty()) {
+            return 0;
+        }
+
+        return (int) bookInstances.stream()
+                .filter(instance -> instance.getStatus() == BookStatus.AVAILABLE)
+                .count();
     }
 }
