@@ -27,6 +27,14 @@ spring.thymeleaf.mode=HTML
 spring.thymeleaf.encoding=UTF-8
 spring.thymeleaf.cache=false
 
-#Đảm bảo Spring Boot tự load file messages.
+# ===============================
+# = JWT
+# ===============================
+jwt.public.key=classpath:public.pem
+jwt.private.key=classpath:key.pem
+application.security.jwt.expiration-minutes=15
+application.security.jwt.refresh-token.expiration-ms=604800000
+
+# Đảm bảo Spring Boot tự load file messages.
 spring.messages.basename=messages
 spring.messages.encoding=UTF-8
