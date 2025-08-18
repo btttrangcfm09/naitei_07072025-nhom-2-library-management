@@ -22,6 +22,8 @@ import com.group2.library_management.dto.response.BaseApiResponse;
 import com.group2.library_management.dto.response.ErrorResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 
 @RestControllerAdvice(basePackages = "com.group2.library_management.controller.api")
@@ -78,6 +80,43 @@ public class ApiExceptionHandler {
             errorMessage,
             request.getRequestURI(),
             errors
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.BAD_REQUEST.value(),
+            errorResponse,
+            errorTitle
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Xử lý lỗi validation cho các tham số trên phương thức (@RequestParam, @PathVariable).
+     * Được kích hoạt khi class Controller đánh dấu @Validated.
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request) {
+        
+        Map<String, String> errors = new HashMap<>();
+        
+        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+            String fieldName = violation.getPropertyPath().toString();
+            String errorMessage = violation.getMessage();
+            
+            errors.put(fieldName, errorMessage);
+        }
+
+        String errorTitle = getMessage("error.title.validation.failed"); 
+        String errorMessage = getMessage("error.message.validation.failed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            errorMessage, 
+            request.getRequestURI(),
+            errors 
         );
 
         BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
