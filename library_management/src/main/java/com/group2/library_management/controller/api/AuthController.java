@@ -1,6 +1,7 @@
 package com.group2.library_management.controller.api;
 
 import com.group2.library_management.dto.request.RegisterRequest;
+import com.group2.library_management.dto.request.TokenRefreshRequest;
 import com.group2.library_management.dto.response.BaseApiResponse;
 import com.group2.library_management.dto.response.UserResponse;
 import com.group2.library_management.service.AuthService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.group2.library_management.dto.request.LoginRequest;
 import com.group2.library_management.dto.response.LoginResponse;
+import com.group2.library_management.dto.response.TokenRefreshResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -50,6 +52,21 @@ public class AuthController {
         BaseApiResponse<LoginResponse> response = new BaseApiResponse<>(
                 HttpStatus.OK.value(),
                 loginResponse,
+                successMessage);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<BaseApiResponse<TokenRefreshResponse>> refreshToken(
+            @Valid @RequestBody TokenRefreshRequest request) {
+        TokenRefreshResponse refreshResponse = authService.refreshToken(request);
+
+        String successMessage = getMessage("success.token.refresh");
+
+        BaseApiResponse<TokenRefreshResponse> response = new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                refreshResponse,
                 successMessage);
 
         return ResponseEntity.ok(response);
