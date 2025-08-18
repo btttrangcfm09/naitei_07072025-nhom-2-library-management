@@ -62,7 +62,7 @@
                         </span>
                     </div>
 
-                    <table class="table table-hover">
+                    <table class="table table-hover main-book-table">
                         <thead>
                         <tr>
                             <th th:text="#{admin.books.table.header.index}"></th>
@@ -80,7 +80,7 @@
                                 <p class="text-muted mt-2" th:text="#{admin.books.message.no_results}"></p>
                             </td>
                         </tr>
-                        <tr th:each="book, iterStat : ${bookPage.content}">
+                        <tr th:each="book, iterStat : ${bookPage.content}"  th:id="'book-row-' + ${book.id()}">
                             <td th:text="${bookPage.number * bookPage.size + iterStat.count}"></td>
                             <td th:text="${book.title()}"></td>
                             <td>
@@ -93,8 +93,10 @@
                             </td>
                             <td class="text-center">
                                 <div>
-                                    <a href="#" class="btn btn-sm btn-outline-primary" th:text="#{admin.books.button.view_editions(${book.editionCount()})}">
-                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-primary js-toggle-editions" 
+                                       th:data-book-id="${book.id()}"
+                                       th:text="#{admin.books.button.view_editions(${book.editionCount()})}">
+                                    </button>
                                 </div>
                             </td>
                             <td class="text-center">
@@ -135,6 +137,41 @@
             </div>
         </div>
     </div>
+
+    <!-- === TEMPLATE for SUB-TABLE === -->
+    <template id="editions-table-template"
+            th:data-header-title="#{admin.editions.table.header.title}"
+            th:data-header-isbn="#{admin.editions.table.header.isbn}"
+            th:data-header-publisher="#{admin.editions.table.header.publisher}"
+            th:data-header-year="#{admin.editions.table.header.year}"
+            th:data-header-quantity="#{admin.editions.table.header.quantity}"
+            th:data-header-actions="#{admin.editions.table.header.actions}"
+            th:data-tooltip-view="#{admin.editions.tooltip.view}"
+            th:data-tooltip-edit="#{admin.editions.tooltip.edit}"
+            th:data-tooltip-delete="#{admin.editions.tooltip.delete}">
+        <div class="editions-sub-table">
+            <table class="table table-sm mb-0">
+                <thead class="thead-light">
+                <tr>
+                    <th class="col-sub-title"></th>
+                    <th class="col-sub-isbn"></th>
+                    <th class="col-sub-publisher"></th>
+                    <th class="col-sub-year text-center"></th>
+                    <th class="col-sub-quantity text-center"></th>
+                    <th class="col-sub-actions text-center"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Data rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </template>
 </div>
+
+<th:block layout:fragment="page-scripts">
+    <script th:src="@{/js/book-list.js}"></script> 
+</th:block>
+
 </body>
 </html>
