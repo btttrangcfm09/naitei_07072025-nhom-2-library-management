@@ -29,10 +29,11 @@ import lombok.RequiredArgsConstructor;
 public class ApiExceptionHandler {
 
     private final MessageSource messageSource;
+    private static final int MAX_QUANTITY_PER_EDITION = 2;
+    private static final int MAX_TOTAL_ITEMS_IN_CART = 5;
 
-    private String getMessage(String code) {
-        // Lấy locale hiện tại từ request
-        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
+    private String getMessage(String code, Object... args) {
+        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
 
     // xử lý lỗi không tìm thấy tài nguyên
@@ -247,6 +248,48 @@ public class ApiExceptionHandler {
     public ResponseEntity<BaseApiResponse<ErrorResponse>> handleAlreadyLoggedOutException(AlreadyLoggedOutException ex, HttpServletRequest request) {
         String errorMessage = getMessage("error.message.already_logged_out");
         String errorTitle = getMessage("error.title.logout.failed");
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            errorMessage,
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.BAD_REQUEST.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(CartQuantityLimitException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleCartQuantityLimitException(CartQuantityLimitException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.cart.quantity_limit", MAX_QUANTITY_PER_EDITION);
+        String errorTitle = getMessage("error.title.cart.operation_failed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            errorMessage, 
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.BAD_REQUEST.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CartTotalItemLimitException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleCartTotalItemLimitException(CartTotalItemLimitException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.cart.total_item_limit", MAX_TOTAL_ITEMS_IN_CART);
+        String errorTitle = getMessage("error.title.cart.operation_failed");
 
         ErrorResponse errorResponse = new ErrorResponse(
             LocalDateTime.now(),

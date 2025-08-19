@@ -9,14 +9,13 @@ import com.group2.library_management.entity.enums.RoleType;
 import com.group2.library_management.entity.enums.UserStatus;
 import com.group2.library_management.exception.AlreadyLoggedOutException;
 import com.group2.library_management.exception.EmailAlreadyExistsException;
-import com.group2.library_management.exception.InvalidPrincipalTypeException;
 import com.group2.library_management.exception.RefreshTokenExpiredException;
 import com.group2.library_management.exception.RefreshTokenNotFoundException;
-import com.group2.library_management.exception.UserNotFoundException;
 import com.group2.library_management.mapper.UserMapper;
 import com.group2.library_management.repository.RefreshTokenRepository;
 import com.group2.library_management.repository.UserRepository;
 import com.group2.library_management.security.CustomUserDetails;
+import com.group2.library_management.service.AbstractBaseService;
 import com.group2.library_management.service.AuthService;
 import com.group2.library_management.service.RefreshTokenService;
 import com.group2.library_management.service.TokenService;
@@ -34,14 +33,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl extends AbstractBaseService implements AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -114,21 +112,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return;
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (!(principal instanceof Jwt)) {
-            throw new InvalidPrincipalTypeException();
-        }
-
-        Jwt jwtPrincipal = (Jwt) principal;
-        String email = jwtPrincipal.getSubject();
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        User user = getCurrentUser();
         
         int deletedCount = refreshTokenService.deleteByUser(user);
 
