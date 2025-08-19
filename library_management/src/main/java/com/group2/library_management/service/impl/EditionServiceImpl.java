@@ -1,9 +1,12 @@
 package com.group2.library_management.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import com.group2.library_management.dto.response.EditionDetailResponse;
 import com.group2.library_management.dto.response.EditionListResponse;
 import com.group2.library_management.dto.response.EditionResponse;
 import com.group2.library_management.entity.Edition;
+import com.group2.library_management.exception.ResourceNotFoundException;
 import com.group2.library_management.repository.EditionRepository;
 import com.group2.library_management.service.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import com.group2.library_management.dto.mapper.EditionMapper;
 public class EditionServiceImpl implements EditionService {
     private final EditionRepository editionRepository;
     private final EditionMapper editionMapper;
+
     @Override
     public Page<EditionListResponse> getAllEditions(Pageable pageable) {
         Page<Edition> editionsPage = editionRepository.findAll(pageable);
@@ -32,5 +36,12 @@ public class EditionServiceImpl implements EditionService {
                 .stream()
                 .map(EditionResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EditionDetailResponse getEditionDetailById(Integer id) {
+        return editionRepository.findById(id)
+                .map(editionMapper::toDetailDto)
+                .orElse(null);
     }
 }
