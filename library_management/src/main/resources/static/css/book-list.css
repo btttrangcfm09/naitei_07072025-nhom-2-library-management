@@ -2,7 +2,7 @@
     color: #343a40 !important;
 }
 
-.table {
+.main-book-table {
     table-layout: fixed;
     width: 100%;
 }
@@ -53,12 +53,12 @@
     text-decoration: none;
 }
 
-.table thead th:nth-child(1) { width: 7%; }
-.table thead th:nth-child(2) { width: 20%; }
-.table thead th:nth-child(3) { width: 20%; }
-.table thead th:nth-child(4) { width: 20%; }
-.table thead th:nth-child(5) { width: 20%; }
-.table thead th:nth-child(6) { width: 13%; }
+.main-book-table thead th:nth-child(1) { width: 7%; }
+.main-book-table thead th:nth-child(2) { width: 20%; }
+.main-book-table thead th:nth-child(3) { width: 20%; }
+.main-book-table thead th:nth-child(4) { width: 20%; }
+.main-book-table thead th:nth-child(5) { width: 20%; }
+.main-book-table thead th:th:nth-child(6) { width: 13%; }
 
 .action-edit, .action-delete {
     padding: 6px;
@@ -67,13 +67,58 @@
 }
 
 .action-edit:hover {
-    background-color: rgba(255, 193, 7, 0.15); /* Màu vàng nhạt */
+    background-color: rgba(255, 193, 7, 0.15);
 }
 
 .action-delete:hover {
-    background-color: rgba(220, 53, 69, 0.1); /* Màu đỏ nhạt */
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 .icon-large {
     font-size: 1.25rem;
 }
+
+.editions-sub-table .table {
+    table-layout: auto; /* Important! */
+    width: 100%;
+}
+
+.editions-sub-table {
+    padding: 1rem;
+    background-color: #f8f9fa; 
+    border-top: 2px solid #dee2e6;
+}
+
+.editions-sub-table .table-sm th,
+.editions-sub-table .table-sm td {
+    padding: 0.6rem;
+    vertical-align: middle;
+}
+
+.editions-sub-table .thead-light th {
+    background-color: #e9ecef;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 500;
+}
+
+/* Container include icon */
+.editions-sub-table .action-icons {
+    display: flex;
+    justify-content: center; /* center */
+    align-items: center;
+    gap: 0.75rem; /* Create a gap of 0.75rem (12px) between icons */
+}
+
+/* Style for each icon */
+.editions-sub-table .action-icons a {
+    display: inline-flex;
+    font-size: 1.1rem; /* Icon size */
+}
+
+/* Sub table column widths */
+.editions-sub-table .col-sub-title { width: 25%; }
+.editions-sub-table .col-sub-isbn { width: 20%; }
+.editions-sub-table .col-sub-publisher { width: 20%; }
+.editions-sub-table .col-sub-year { width: 10%; }
+.editions-sub-table .col-sub-quantity { width: 10%; }
+.editions-sub-table .col-sub-actions { width: 15%; }

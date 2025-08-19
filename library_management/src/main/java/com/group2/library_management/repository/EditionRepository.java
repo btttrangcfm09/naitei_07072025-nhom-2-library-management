@@ -1,5 +1,6 @@
 package com.group2.library_management.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ import com.group2.library_management.entity.Edition;
 public interface EditionRepository extends JpaRepository<Edition, Integer> {
     Optional<Edition> findByIsbn(String isbn);
     Boolean existsByIsbn(String isbn);
+
+    List<Edition> findByBookIdOrderByPublicationDateDesc(Integer bookId);
 }
