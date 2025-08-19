@@ -43,7 +43,7 @@
                                 <option value="">-- Tất cả trạng thái --</option>
                                 <option th:each="st : ${allStatuses}"
                                         th:value="${st.ordinal()}"
-                                        th:text="${statusDisplayNames.get(st)}"
+                                        th:text="${@enumDisplayService.getBorrowingStatusDisplayName(st)}"
                                         th:selected="${currentStatus != null and currentStatus == st.ordinal()}">
                                 </option>
                             </select>
@@ -112,11 +112,16 @@
                             </td>
                             <td>
                                 <label class="badge"
-                                       th:classappend="${#strings.toString(receipt.status()) == 'PENDING' ? 'badge-warning' : #strings.toString(receipt.status()) == 'APPROVED' ? 'badge-success' : #strings.toString(receipt.status()) == 'REJECTED' ? 'badge-danger' : #strings.toString(receipt.status()) == 'RETURNED' ? 'badge-info' : #strings.toString(receipt.status()) == 'BORROWED' ? 'badge-primary' : #strings.toString(receipt.status()) == 'OVERDUE' ? 'badge-dark' : 'badge-secondary'}"
-                                       th:text="${statusDisplayNames.get(receipt.status())}"></label>
+                                       th:classappend="${receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).PENDING ? 'badge-warning' :
+                                       receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).APPROVED ? 'badge-success' :
+                                       receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).REJECTED ? 'badge-danger' :
+                                       receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).RETURNED ? 'badge-info' :
+                                       receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED ? 'badge-primary' :
+                                       receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE ? 'badge-dark' : 'badge-secondary'}"
+                                       th:text="${@enumDisplayService.getBorrowingStatusDisplayName(receipt.status())}"></label>
                             </td>
                             <td class="text-center">
-                                <a href="#" class="action-view text-info" title="Xem chi tiết">
+                                <a th:href="@{/admin/borrow-requests/{id}(id=${receipt.id()})}" class="action-view text-info" title="Xem chi tiết">
                                     <i class="mdi mdi-eye"></i>
                                 </a>
                             </td>
