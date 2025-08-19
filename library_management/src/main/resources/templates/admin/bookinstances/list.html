@@ -116,7 +116,7 @@
                             </span>
                         </div>
 
-                        <table class="table table-hover titlestyle">
+                        <table class="table table-hover main-bookinstance-table">
                             <thead>
                                 <tr>
                                     <th th:text="#{admin.bookinstances.table.header.index}"></th>
@@ -139,7 +139,7 @@
                                     </td>
                                 </tr>
 
-                                <tr th:each="edition, iterStat : ${editionPage.content}">
+                                <tr th:each="edition, iterStat : ${editionPage.content}" th:id="'edition-row-' + ${edition.id()}">
                                     <td th:text="${editionPage.number * editionPage.size + iterStat.count}"></td>
                                     <td th:text="${edition.title()}"></td>
                                     <td th:text="${edition.language()}!=null ? ${edition.language()}:''"></td>
@@ -149,9 +149,10 @@
                                     </td>
                                     <td class="text-center">
                                         <div>
-                                            <a href="#" class="btn btn-sm btn-outline-primary"
+                                            <button type="button" class="btn btn-sm btn-outline-primary js-toggle-bookinstances"
+                                                th:data-edition-id="${edition.id()}"
                                                 th:text="#{admin.bookinstances.button.view_editions(${edition.bookinstanceCount()})}">
-                                            </a>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -192,7 +193,52 @@
                 </div>
             </div>
         </div>
-    </div>
-</body>
 
+        <!--Template for sub-table-->
+        <template id="bookinstances-table-template"
+            th:data-header-barcode="#{admin.bookinstances.table.header.barcode}"
+            th:data-header-callNumber="#{admin.bookinstances.table.header.callNumber}"
+            th:data-header-status="#{admin.bookinstances.table.header.status}"
+            th:data-header-acquiredDate="#{admin.bookinstances.table.header.acquiredDate}"
+            th:data-header-acquiredPrice="#{admin.bookinstances.table.header.acquiredPrice}"
+            th:data-header-actions="#{admin.bookinstances.table.header.actions}"
+
+            th:data-tooltip-view="#{admin.bookinstances.tooltip.view}"
+            th:data-tooltip-edit="#{admin.bookinstances.tooltip.edit}"
+            th:data-tooltip-delete="#{admin.bookinstances.tooltip.delete}"
+            
+            th:data-status-available="#{admin.bookinstances.status.available}"
+            th:data-status-repairing="#{admin.bookinstances.status.repairing}"
+            th:data-status-borrowed="#{admin.bookinstances.status.borrowed}"
+            th:data-status-lost="#{admin.bookinstances.status.lost}"
+            th:data-status-damaged="#{admin.bookinstances.status.damaged}"
+            th:data-status-archived="#{admin.bookinstances.status.archived}"
+            th:data-status-reserved="#{admin.bookinstances.status.reserved}"
+            th:data-status-unknown="#{admin.bookinstances.status.unknown}">
+            
+            <div class="bookinstances-sub-table">
+                <table class="table table-sm mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="col-sub-barcode"></th>
+                            <th class="col-sub-callNumber"></th>
+                            <th class="col-sub-status"></th>
+                            <th class="col-sub-acquiredDate text-center"></th>
+                            <th class="col-sub-acquiredPrice text-center"></th>
+                            <th class="col-sub-actions text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </template>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script th:src="@{/js/helpers.js}"></script> 
+        <script th:src="@{/js/bookinstance-list.js}"></script>
+    </th:block>
+</body>
 </html>
