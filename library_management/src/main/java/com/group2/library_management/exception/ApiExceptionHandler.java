@@ -213,7 +213,7 @@ public class ApiExceptionHandler {
             errorMessage,
             request.getRequestURI()
         );
-
+        
         BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
             HttpStatus.FORBIDDEN.value(),
             errorResponse,
@@ -241,6 +241,48 @@ public class ApiExceptionHandler {
             errorTitle
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AlreadyLoggedOutException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleAlreadyLoggedOutException(AlreadyLoggedOutException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.already_logged_out");
+        String errorTitle = getMessage("error.title.logout.failed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            errorMessage,
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.BAD_REQUEST.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPrincipalTypeException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleInvalidPrincipalTypeException(InvalidPrincipalTypeException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.invalid_principal");
+        String errorTitle = getMessage("error.title.auth.failed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.UNAUTHORIZED.value(),
+            HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+            errorMessage,
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.UNAUTHORIZED.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     // xử lý lỗi khác (fallback)
