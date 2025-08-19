@@ -1,9 +1,13 @@
 package com.group2.library_management.exception;
 
 import java.io.IOException;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -69,4 +73,17 @@ public class WebExceptionHandler {
         // Nếu không lấy được Referer, chuyển hướng về một trang mặc định an toàn
         return "redirect:/"; 
     }
+
+    @ExceptionHandler(CannotDeleteResourceException.class)
+    public ResponseEntity<Map<String, String>> handleCannotDeleteResource(CannotDeleteResourceException ex, WebRequest request){
+        Map<String, String> errorDetails = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(BookInstanceNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleBookInstanceNotFound(BookInstanceNotFoundException ex, WebRequest request){
+        Map<String, String> errorDetails = Map.of("error", ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
 }

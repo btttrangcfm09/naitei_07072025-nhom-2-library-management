@@ -10,7 +10,11 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import com.group2.library_management.entity.enums.BookStatus;
 
@@ -21,6 +25,8 @@ import com.group2.library_management.entity.enums.BookStatus;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE book_instances SET delete_at = NOW() WHERE id = ?") // update time when delete
+@SQLRestriction("delete_at IS NULL")
 public class BookInstance {
 
     @Id
@@ -48,6 +54,9 @@ public class BookInstance {
 
     @Column(columnDefinition = "TEXT")
     private String note;
+
+    @Column(name = "delete_at")
+    private LocalDateTime deleteAt;
 
     @OneToMany(mappedBy = "bookInstance")
     private List<BorrowingDetail> borrowingDetails;
