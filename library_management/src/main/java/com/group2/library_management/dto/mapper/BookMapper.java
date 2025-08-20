@@ -12,6 +12,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.Collections;
 import java.util.List;
 
 @Mapper(
@@ -35,8 +36,8 @@ public interface BookMapper {
      */
     @Named("authorBooksToAuthorNames")
     default List<String> authorBooksToAuthorNames(List<AuthorBook> authorBooks) {
-        if (authorBooks == null) {
-            return null;
+        if (authorBooks == null || authorBooks.isEmpty()) {
+            return Collections.emptyList(); 
         }
         return authorBooks.stream()
                 .map(AuthorBook::getAuthor)
@@ -49,8 +50,8 @@ public interface BookMapper {
      */
     @Named("bookGenresToGenreNames")
     default List<String> bookGenresToGenreNames(List<BookGenre> bookGenres) {
-        if (bookGenres == null) {
-            return null;
+        if (bookGenres == null || bookGenres.isEmpty()) {
+            return Collections.emptyList();
         }
         return bookGenres.stream()
                 .map(BookGenre::getGenre)
