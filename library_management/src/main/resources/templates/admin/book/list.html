@@ -62,7 +62,7 @@
                         </span>
                     </div>
 
-                    <table class="table table-hover main-book-table">
+                    <table class="table table-hover main-book-table" th:data-error-message="#{admin.editions.detail.error_load}">
                         <thead>
                         <tr>
                             <th th:text="#{admin.books.table.header.index}"></th>
@@ -167,6 +167,50 @@
             </table>
         </div>
     </template>
+
+    <!-- MODAL FOR EDITION DETAILS -->
+    <div class="modal fade" id="editionDetailModal" tabindex="-1" role="dialog" aria-labelledby="editionDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-custom-width" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editionDetailModalLabel" th:text="#{admin.editions.detail.modal_title}"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body edition-detail-body">
+                    <div class="row">
+                        <div class="col-5">
+                            <img id="modal-edition-cover" src="" class="img-fluid rounded edition-cover-image" th:alt="#{admin.editions.detail.no_image}">
+                        </div>
+                        <div class="col-7 info-section">
+                            <h4 class="book-title-main" id="modal-edition-title"></h4>
+                            <br>
+                            <p><strong th:text="#{admin.editions.detail.label.book_title} + ': '"></strong><span id="modal-book-title"></span></p>
+                            <p><strong><span th:text="#{admin.editions.detail.label.authors} + ': '"></span></strong><span id="modal-edition-authors"></span></p>
+                            <p><strong>ISBN: </strong><span id="modal-edition-isbn"></span></p>
+                            <p><strong><span th:text="#{admin.editions.detail.label.publisher} + ': '"></span></strong><span id="modal-edition-publisher"></span></p>
+                            <p><strong><span th:text="#{admin.editions.detail.label.language} + ': '"></span></strong><span id="modal-edition-language"></span></p>
+                            <p><strong><span th:text="#{admin.editions.detail.label.pages} + ': '"></span></strong><span id="modal-edition-pages"></span></p>
+                            <p><strong><span th:text="#{admin.editions.detail.label.format} + ': '"></span></strong><span id="modal-edition-format"></span></p>
+                            <div>
+                                <strong><span th:text="#{admin.editions.detail.label.quantity}"></span>:</strong>
+                                <span th:text="#{admin.editions.detail.quantity.initial(0)}" id="modal-edition-initial-qty"></span> /
+                                <span th:text="#{admin.editions.detail.quantity.available(0)}" id="modal-edition-available-qty"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6><strong th:text="#{admin.editions.detail.label.description}"></strong></h6>
+                    <p id="modal-edition-description"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-dismiss="modal" th:text="#{admin.editions.detail.button.close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <th:block layout:fragment="page-scripts">

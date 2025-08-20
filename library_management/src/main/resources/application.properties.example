@@ -38,3 +38,6 @@ application.security.jwt.refresh-token.expiration-ms=604800000
 # Đảm bảo Spring Boot tự load file messages.
 spring.messages.basename=messages
 spring.messages.encoding=UTF-8
+
+# Path to the ROOT directory containing uploaded files. Ex: C:/library_uploads
+application.upload-dir=your_directory

@@ -1,5 +1,6 @@
 package com.group2.library_management.service;
 
+import com.group2.library_management.entity.enums.BookFormat;
 import com.group2.library_management.entity.enums.BookStatus;
 import com.group2.library_management.entity.enums.BorrowingStatus;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,28 @@ public class EnumDisplayService {
      */
     public String getBookStatusDisplayName(BookStatus status) {
         return BOOK_STATUS_NAMES.getOrDefault(status, status.name());
+    }
+
+    // Using Map to store display names for easy expansion
+    private static final Map<BookFormat, String> BOOK_FORMAT_DISPLAY_NAMES = Map.of(
+        BookFormat.HARDCOVER, "Bìa cứng",
+        BookFormat.SOFTCOVER, "Bìa mềm",
+        BookFormat.EBOOK, "Sách điện tử"
+    );
+
+    /** Get display name for a specific BookFormat
+     * @param format Enum BookFormat
+     * @return String name displayed
+     */
+    public String getDisplayName(BookFormat format) {
+        // enum is null
+        if (format == null) {
+            return "Không xác định";
+        }
+
+        // getOrDefault is a safe way to retrieve values from the Map
+        // It will return the default value, which is the name of the enum (e.g., "HARDCOVER")
+        // instead of throwing a NullPointerException.
+        return BOOK_FORMAT_DISPLAY_NAMES.getOrDefault(format, format.name());
     }
 }
