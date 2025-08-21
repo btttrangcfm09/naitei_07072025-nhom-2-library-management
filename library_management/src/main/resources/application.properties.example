@@ -41,3 +41,5 @@ spring.messages.encoding=UTF-8
 
 # Path to the ROOT directory containing uploaded files. Ex: C:/library_uploads
 application.upload-dir=your_directory
+
+spring.mvc.hiddenmethod.filter.enabled=true

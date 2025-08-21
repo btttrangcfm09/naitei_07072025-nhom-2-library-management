@@ -21,21 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editionsTemplate = document.getElementById('editions-table-template');
 
     // Get translated strings from template
-    const i18n = {
-        header: {
-            title: editionsTemplate.dataset.headerTitle,
-            isbn: editionsTemplate.dataset.headerIsbn,
-            publisher: editionsTemplate.dataset.headerPublisher,
-            year: editionsTemplate.dataset.headerYear,
-            quantity: editionsTemplate.dataset.headerQuantity,
-            actions: editionsTemplate.dataset.headerActions
-        },
-        tooltip: {
-            view: editionsTemplate.dataset.tooltipView,
-            edit: editionsTemplate.dataset.tooltipEdit,
-            delete: editionsTemplate.dataset.tooltipDelete
-        }
-    };
+    const i18n = buildI18nForEditions(editionsTemplate);
 
     toggleButtons.forEach(button => {
         button.addEventListener('click', function (event) {
@@ -156,6 +142,31 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create data rows
         editions.forEach(edition => {
             const row = document.createElement('tr');
+
+            let deleteButtonHtml = '';
+            const status = edition.deletionStatus; // Get status from DTO
+
+            console.log(status);
+
+            if (status === 'CANNOT_DELETE') {
+                deleteButtonHtml = `
+                    <span title="${i18n.tooltip.disabled}">
+                        <a href="#" class="text-danger ml-2 disabled-delete">
+                            <i class="mdi mdi-delete"></i>
+                        </a>
+                    </span>`;
+            } else {
+                deleteButtonHtml = `
+                    <a href="#" class="text-danger ml-2 js-delete-edition" 
+                       title="${i18n.tooltip.delete}" 
+                       data-edition-id="${edition.id}" 
+                       data-edition-isbn="${edition.isbn}">
+                        <i class="mdi mdi-delete"></i>
+                    </a>`;
+            }
+
+            console.log(deleteButtonHtml);
+
             row.innerHTML = `
                 <td class="col-sub-title">${edition.title}</td>
                 <td class="col-sub-isbn">${edition.isbn}</td>
@@ -167,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="action-icons">
                         <a href="#" class="text-info js-view-edition" title="${i18n.tooltip.view}" data-edition-id="${edition.id}"><i class="mdi mdi-eye"></i></a>
                         <a href="#" class="text-primary" title="${i18n.tooltip.edit}"><i class="mdi mdi-pencil"></i></a>
-                        <a href="#" class="text-danger" title="${i18n.tooltip.delete}"><i class="mdi mdi-delete"></i></a>
+                        ${deleteButtonHtml}
                     </div>
                 </td>
             `;
@@ -176,4 +187,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return tableContainer;
     }
+
+    const deleteEditionModal = new bootstrap.Modal(document.getElementById('deleteEditionModal'));
+    const deleteConfirmMessage = document.getElementById('delete-confirm-message');
+    const deleteEditionForm = document.getElementById('deleteEditionForm');
+
+    // event delegation
+    document.body.addEventListener('click', function(event) {
+        const deleteButton = event.target.closest('.js-delete-edition');
+        if (deleteButton && !deleteButton.disabled) {
+            event.preventDefault();
+            const editionIsbn = deleteButton.dataset.editionIsbn;
+            const editionId = deleteButton.dataset.editionId;
+            
+            // get message from template
+            const message = `${i18n.message.confirmDelete} ${editionIsbn}?`;
+            deleteConfirmMessage.textContent = message;
+
+            // update action of form
+            // deleteEditionForm.action = `/admin/editions/${editionId}/delete`;
+            deleteEditionForm.action = `/admin/editions/${editionId}`; 
+
+            deleteEditionModal.show();
+        }
+    });
 });

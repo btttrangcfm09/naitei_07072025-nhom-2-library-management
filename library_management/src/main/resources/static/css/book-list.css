@@ -185,3 +185,10 @@
 .toast-notification.error {
     background-color: #dc3545; /* Red */
 }
+
+/* Class cho nút xóa bị vô hiệu hóa */
+.disabled-delete {
+    pointer-events: none;   
+    opacity: 0.5;          
+    cursor: not-allowed;    
+}

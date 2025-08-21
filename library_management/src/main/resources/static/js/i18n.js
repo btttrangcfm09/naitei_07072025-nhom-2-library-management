@@ -38,3 +38,31 @@ function buildI18n(template) {
         }
     };
 }
+
+function buildI18nForEditions(template) {
+    return {
+        header: {
+            title: template.dataset.headerTitle,
+            isbn: template.dataset.headerIsbn,
+            publisher: template.dataset.headerPublisher,
+            year: template.dataset.headerYear,
+            quantity: template.dataset.headerQuantity,
+            actions: template.dataset.headerActions
+        },
+        tooltip: {
+            view: template.dataset.tooltipView,
+            edit: template.dataset.tooltipEdit,
+            delete: template.dataset.tooltipDelete,
+            disabled: template.dataset.tooltipDisabled
+        },
+        message: {
+            confirmDelete: template.dataset.messageConfirmDelete
+        },
+        status: {
+            cannotDelete: template.dataset.statusCannotDelete
+        },
+        infor: {
+            reload: template.dataset.inforReload
+        }
+    };
+}
