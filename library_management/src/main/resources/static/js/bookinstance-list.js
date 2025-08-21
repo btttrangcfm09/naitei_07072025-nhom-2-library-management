@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     setupDeleteHandler(i18n);
+    setupViewHandler(i18n);
 
     function createBookInstancesTable(bookInstances, i18n) {
         // Clone template's content
@@ -80,7 +81,11 @@ document.addEventListener('DOMContentLoaded', function () {
             <td class="col-sub-acquiredPrice text-center">${bookInstance.acquiredPrice || 'N/A'}</td>
             <td class="col-sub-actions">
                 <div class="action-icons">
-                    <a href="#" class="text-info" title="${i18n.tooltip.view}"><i class="mdi mdi-eye"></i></a>
+                   <a href="#" class="text-info js-view-bookinstance" 
+                        data-bookinstance-id="${bookInstance.id}" 
+                        title="${i18n.tooltip.view}">
+                        <i class="mdi mdi-eye"></i>
+                    </a>                   
                     <a href="#" class="text-primary" title="${i18n.tooltip.edit}"><i class="mdi mdi-pencil"></i></a>
                     <a href="#" class="text-danger js-delete-bookinstance" 
                        data-bookinstance-id="${bookInstance.id}"
@@ -127,4 +132,90 @@ function setupDeleteHandler(i18n) {
             }
         });
     });
+}
+
+/**
+ * Handles the view detail logic for BookInstances using a Bootstrap Modal,
+ * following the specified logic pattern.
+ * @param {object} i18n - The internationalization object.
+ */
+function setupViewHandler(i18n) {
+    const modalElement = document.getElementById('bookinstanceDetailModal');
+
+    if (!modalElement) {
+        console.error('Modal with ID "bookinstanceDetailModal" not found in the DOM.');
+        return;
+    }
+
+    const bookInstanceModal = new bootstrap.Modal(modalElement);
+
+    document.addEventListener('click', function(event) {
+        const viewButton = event.target.closest('.js-view-bookinstance');
+        
+        if (!viewButton) {
+            return;
+        }
+
+        event.preventDefault(); 
+        const id = viewButton.dataset.bookinstanceId;
+
+        if (!id) {
+            console.error('Could not get a valid data-bookinstance-id from the clicked button.');
+            return;
+        }
+
+        fetch(`/admin/bookinstances/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                populateBookInstanceModal(data, i18n);
+                bookInstanceModal.show();
+            })
+            .catch(error => {
+                console.error('Error fetching bookinstance details:', error);
+                Swal.fire({
+                    title: i18n.deletebox.title,
+                    text: i18n.infor.reload,
+                    icon: 'error',
+                    confirmButtonText: 'Đã hiểu'
+                });
+            });
+    });
+}
+
+/**
+ * Populates the book instance detail modal with data from the API.
+ * @param {object} data - The book instance data object from the API.
+ * @param {object} i18n - The internationalization object.
+ */
+function populateBookInstanceModal(data, i18n) {
+
+    // Data for Edition
+    setTextContentById('modal-edition-title', data.editionTitle || 'N/A');
+    setTextContentById('modal-edition-isbn', data.isbn || 'N/A');
+    
+    const coverImage = document.getElementById('modal-edition-cover');
+    const defaultCover = '/images/editions/default-cover.png'; // Đảm bảo đường dẫn này đúng
+    coverImage.src = data.coverImageUrl || defaultCover;
+    coverImage.onerror = function() {
+        this.onerror = null;
+        this.src = defaultCover;
+    };
+
+    //Data for Book
+    setTextContentById('modal-book-title', data.bookTitle || 'N/A');
+
+    // Data for BookInstance
+    setTextContentById('modal-bookinstance-barcode', data.barcode || 'N/A');
+    setTextContentById('modal-bookinstance-callnumber', data.callNumber || 'N/A');
+    setTextContentById('modal-bookinstance-acquiredDate', data.acquiredDate || 'N/A');
+
+    setTextContentById('modal-bookinstance-acquiredPrice',  data.acquiredPrice?.toString() || 'N/A');
+    const statusText = formatStatus(data.status, i18n.status, false); 
+    setTextContentById('modal-bookinstance-status', statusText);
+    setTextContentById('modal-bookinstance-note', data.note ||  'Không có ghi chú.');
 }

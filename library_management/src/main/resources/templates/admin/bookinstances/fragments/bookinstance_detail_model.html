@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- MODAL FOR BOOKINSTANCE DETAIL -->
+    <div th:fragment="bookinstanceDetailModal" class="modal fade" id="bookinstanceDetailModal" ...>
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-custom-width" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookinstanceDetailModalLabel" th:text="#{admin.bookinstance.detail.modal_title}"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bookinstance-detail-body">
+                    <div class="row">
+                        <div class="col-5">
+                            <!-- Edition's data -->
+                            <img id="modal-edition-cover" src="" class="img-fluid rounded edition-cover-image" th:alt="#{admin.bookinstance.detail.no_image}">
+                        </div>
+                        <div class="col-7 info-section">
+                            <!-- Edition title -->
+                            <h4 class="edition-title-main" id="modal-edition-title"></h4>
+                            <br>
+                            <!-- Book Title-->
+                             <p><strong><span th:text="#{admin.bookinstance.detail.label.book_title} + ': '"></span></strong><span id="modal-book-title"></span></p>
+                            <!-- Edition isbn -->
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.isbn} + ': '"></span></strong><span id="modal-edition-isbn"></span></p>
+                            
+                            <!-- Book Instance's data -->
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.barcode} + ': '"></span></strong><span id="modal-bookinstance-barcode"></span></p>
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.callnumber} + ': '"></span></strong><span id="modal-bookinstance-callnumber"></span></p>
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.acquiredate} + ': '"></span></strong><span id="modal-bookinstance-acquiredDate"></span></p>
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.acquiredprice} + ': '"></span></strong><span id="modal-bookinstance-acquiredPrice"></span></p>
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.status} + ': '"></span></strong><span id="modal-bookinstance-status"></span></p>
+                            <p><strong><span th:text="#{admin.bookinstance.detail.label.note} + ': '"></span></strong><span id="modal-bookinstance-note"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" th:text="#{admin.bookinstance.detail.button.close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

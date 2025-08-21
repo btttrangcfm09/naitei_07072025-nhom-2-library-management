@@ -10,6 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.group2.library_management.dto.mapper.BookInstanceMapper;
+import com.group2.library_management.dto.response.BookInstanceDetailResponse;
 import com.group2.library_management.dto.response.BookInstanceResponse;
 import com.group2.library_management.repository.BookInstanceRepository;
 import com.group2.library_management.repository.BorrowingDetailRepository;
@@ -84,5 +85,15 @@ public class BookInstanceServiceImpl implements BookInstanceService {
         bookInstance.setStatus(newStatus);
         // save in db
         bookInstanceRepository.save(bookInstance);
+    }
+
+    @Override
+    public BookInstanceDetailResponse getBookInstanceDetail(Integer bookInstanceId) {
+
+        return bookInstanceRepository
+            .findById(bookInstanceId)
+            .map(bookInstanceMapper::mapToBookInstanceDetailResponse)
+            .orElse(null);
+            
     }
 }

@@ -200,3 +200,42 @@
 .bookinstances-sub-table td.col-sub-actions {
     text-align: left !important;
 }
+
+.edition-cover-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+}
+
+.modal-dialog.modal-custom-width {
+    max-width: 900px;
+}
+
+.bookinstance-detail-body .info-section{
+    padding-left: 20px;
+}
+
+/* Cover image */
+.modal-cover-image {
+    width: 100%;
+    height: 450px;
+
+    object-fit: contain; 
+
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa; /* background color */
+    border-radius: 4px;
+}
+
+/* Style for paragraph elements within the info section */
+.bookinstance-detail-body .info-section p {
+    margin-bottom: 0.8rem; /* Increase spacing between lines */
+    font-size: 1rem;
+}
+
+/* .bookinstance-detail-body .info-section .edition-title-main {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #343a40;
+} */
