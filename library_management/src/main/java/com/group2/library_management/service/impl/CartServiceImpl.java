@@ -8,6 +8,7 @@ import com.group2.library_management.entity.*;
 import com.group2.library_management.exception.CartQuantityLimitException;
 import com.group2.library_management.exception.CartTotalItemLimitException;
 import com.group2.library_management.exception.ResourceNotFoundException;
+import com.group2.library_management.repository.CartItemRepository;
 import com.group2.library_management.repository.CartRepository;
 import com.group2.library_management.repository.EditionRepository; 
 import com.group2.library_management.service.AbstractBaseService;
@@ -22,8 +23,9 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
 
     private final CartRepository cartRepository;
     private final EditionRepository editionRepository;
+    private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
-    
+
     private static final int MAX_QUANTITY_PER_EDITION = 2;
     private static final int MAX_TOTAL_ITEMS_IN_CART  = 5;
 
@@ -89,6 +91,25 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
         User currentUser = getCurrentUser();
 
         Cart cart = cartRepository.findById(currentUser.getId()).orElseGet(() -> createNewCart(currentUser));
+        return cartMapper.toCartResponse(cart);
+    }
+    
+    @Override
+    @Transactional 
+    public CartResponse removeItemFromCart(Integer cartItemId) {
+        User currentUser = getCurrentUser();
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        Cart cart = cartItem.getCart();
+        if (cart == null || cart.getUser() == null || !cart.getUser().getId().equals(currentUser.getId())) {
+            throw new ResourceNotFoundException();
+        }
+
+        cart.removeItem(cartItem);
+        cartRepository.save(cart);
+
         return cartMapper.toCartResponse(cart);
     }
 }

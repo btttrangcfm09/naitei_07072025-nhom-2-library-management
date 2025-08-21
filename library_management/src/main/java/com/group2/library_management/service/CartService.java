@@ -8,4 +8,12 @@ public interface CartService {
     CartUpdateResponse addToCart(AddToCartRequest request);
 
     CartResponse viewCart();
+    
+    /**
+     * Xóa một item khỏi giỏ hàng và trả về toàn bộ giỏ hàng đã được cập nhật.
+     * 
+     * @param cartItemId ID của cart item cần xóa.
+     * @return DTO chứa thông tin chi tiết của giỏ hàng sau khi cập nhật.
+     */
+    CartResponse removeItemFromCart(Integer cartItemId);
 }
