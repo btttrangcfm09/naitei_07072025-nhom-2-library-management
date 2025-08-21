@@ -72,4 +72,18 @@ public class CartController {
         
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping
+    public ResponseEntity<BaseApiResponse<CartResponse>> clearCart() {
+        CartResponse cartResponse = cartService.clearCart();
+        
+        String successMessage = getMessage("success.cart.clear");
+        BaseApiResponse<CartResponse> response = new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                cartResponse,
+                successMessage
+        );
+        
+        return ResponseEntity.ok(response);
+    }
 }
