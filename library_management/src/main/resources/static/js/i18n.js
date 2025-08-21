@@ -26,6 +26,15 @@ function buildI18n(template) {
         infor: {
             nulldata: template.dataset.inforNulldata,
             reload: template.dataset.inforReload
+        },
+        deletebox: {
+            title: template.dataset.deleteboxTitle,
+            text: template.dataset.deleteboxText,
+            confirmbutton: template.dataset.deleteboxConfirmButton,
+            cancelbutton: template.dataset.deleteboxCancelButton,
+            successtitle: template.dataset.deleteboxSuccessTitle,
+            errortitle: template.dataset.deleteboxErrorTitle
+
         }
     };
 }

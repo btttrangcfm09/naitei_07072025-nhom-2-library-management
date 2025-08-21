@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    setupDeleteHandler(i18n);
+
     function createBookInstancesTable(bookInstances, i18n) {
         // Clone template's content
         const templateContent = bookInstancesTemplate.content.cloneNode(true);
@@ -80,7 +82,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="action-icons">
                     <a href="#" class="text-info" title="${i18n.tooltip.view}"><i class="mdi mdi-eye"></i></a>
                     <a href="#" class="text-primary" title="${i18n.tooltip.edit}"><i class="mdi mdi-pencil"></i></a>
-                    <a href="#" class="text-danger" title="${i18n.tooltip.delete}"><i class="mdi mdi-delete"></i></a>
+                    <a href="#" class="text-danger js-delete-bookinstance" 
+                       data-bookinstance-id="${bookInstance.id}"
+                       data-bookinstance-barcode="${bookInstance.barcode}" 
+                       title="${i18n.tooltip.delete}">
+                       <i class="mdi mdi-delete"></i>
+                    </a>
                 </div>
             </td>
         `;
@@ -89,3 +96,35 @@ document.addEventListener('DOMContentLoaded', function () {
         return tableContainer;
     }
 });
+
+function setupDeleteHandler(i18n) {
+    document.addEventListener('click', function (event) {
+        const deleteButton = event.target.closest('.js-delete-bookinstance');
+
+        if (!deleteButton) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const id = deleteButton.dataset.bookinstanceId;
+        const rowToDelete = deleteButton.closest('tr');
+        const endpointUrl = '/admin/bookinstances';
+        const barcode = deleteButton.dataset.bookinstanceBarcode;
+
+        Swal.fire({
+            title: i18n.deletebox.title,
+            text: i18n.deletebox.text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: i18n.deletebox.confirmbutton,
+            cancelButtonText: i18n.deletebox.cancelbutton
+        }).then((result) => {
+            if (result.isConfirmed) {
+                performGenericDelete(`${endpointUrl}/${id}`, rowToDelete, barcode, i18n);
+            }
+        });
+    });
+}

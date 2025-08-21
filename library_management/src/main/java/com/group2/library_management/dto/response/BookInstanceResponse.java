@@ -5,10 +5,11 @@ import java.time.LocalDate;
 
 import com.group2.library_management.entity.enums.BookStatus;
 
-public record BookInstanceResponse(String barcode,
+public record BookInstanceResponse(String id,
+                                   String barcode,
                                    String callNumber,
                                    LocalDate acquiredDate,
                                    BigDecimal acquiredPrice,
                                    BookStatus status) {
-    
+
 }
