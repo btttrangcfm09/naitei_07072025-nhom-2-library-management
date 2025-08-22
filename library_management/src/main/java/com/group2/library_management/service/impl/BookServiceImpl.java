@@ -1,53 +1,85 @@
 package com.group2.library_management.service.impl;
 
+import com.group2.library_management.common.constants.PaginationConstants;
+import com.group2.library_management.dto.enums.MatchMode;
+import com.group2.library_management.dto.mapper.BookMapper;
+import com.group2.library_management.dto.request.BookQueryParameters;
 import com.group2.library_management.dto.response.BookResponse;
-import com.group2.library_management.entity.Author;
-import com.group2.library_management.entity.AuthorBook; 
 import com.group2.library_management.entity.Book;
 import com.group2.library_management.repository.BookRepository;
+import com.group2.library_management.repository.specification.BookSpecification;
 import com.group2.library_management.service.BookService;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
+
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookServiceImpl implements BookService {
 
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "title"); 
+
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     @Override
-    public Page<BookResponse> getAllBooks(String keyword, Pageable pageable) {
-        Specification<Book> spec = (root, query, cb) -> {
-            query.distinct(true);
-            List<Predicate> predicates = new ArrayList<>();
+    public Page<BookResponse> getAllBooks(BookQueryParameters params) {
 
-            if (StringUtils.hasText(keyword)) {
-                String pattern = "%" + keyword.toLowerCase().trim() + "%";
+        int page = Optional.ofNullable(params.page()).orElse(PaginationConstants.DEFAULT_PAGE_NUMBER);
+        int size = Optional.ofNullable(params.size()).orElse(PaginationConstants.DEFAULT_PAGE_SIZE);
+        String[] sortParams = Optional.ofNullable(params.sort()).orElse(PaginationConstants.DEFAULT_SORT);
+        
+        // Xử lý tham số sắp xếp
+        String sortField = sortParams[0];
+        if (!StringUtils.hasText(sortField) || !ALLOWED_SORT_FIELDS.contains(sortField)) { 
+            sortField = PaginationConstants.DEFAULT_SORT[0]; 
+        }
+        Sort.Direction direction = sortParams[1].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-                // Join Book -> AuthorBook -> Author to find by author name
-                Join<Book, AuthorBook> authorBookJoin = root.join("authorBooks", JoinType.LEFT);
-                Join<AuthorBook, Author> authorJoin = authorBookJoin.join("author", JoinType.LEFT);
+        Sort.Order order = new Sort.Order(direction, sortField);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(order));
 
-                Predicate titleLike = cb.like(cb.lower(root.get("title")), pattern);
-                Predicate authorNameLike = cb.like(cb.lower(authorJoin.get("name")), pattern);
+        Specification<Book> spec = Specification.unrestricted();
 
-                predicates.add(cb.or(titleLike, authorNameLike));
+        if (StringUtils.hasText(params.keyword())) {
+            spec = spec.and(BookSpecification.searchByKeyword(params.keyword()));
+        }
+
+        if (!CollectionUtils.isEmpty(params.genreIds())) {
+            MatchMode mode = Optional.ofNullable(params.genreMatchMode()).orElse(MatchMode.ANY); 
+
+            if (mode == MatchMode.ALL) {
+                spec = spec.and(BookSpecification.hasAllGenres(params.genreIds()));
+            } else {
+                spec = spec.and(BookSpecification.hasAnyGenre(params.genreIds()));
             }
+        }
 
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
+        if (!CollectionUtils.isEmpty(params.authorIds())) {
+            MatchMode mode = Optional.ofNullable(params.authorMatchMode()).orElse(MatchMode.ANY);
+            
+            if (mode == MatchMode.ALL) {
+                spec = spec.and(BookSpecification.hasAllAuthors(params.authorIds()));
+            } else {
+                spec = spec.and(BookSpecification.hasAnyAuthor(params.authorIds()));
+            }
+        }
 
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
-        return bookPage.map(BookResponse::fromEntity);
+
+        return bookPage.map(bookMapper::toBookResponse);
     }
 }
