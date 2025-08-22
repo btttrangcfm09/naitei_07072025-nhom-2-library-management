@@ -1,6 +1,8 @@
 package com.group2.library_management.service.impl;
 
+import com.group2.library_management.dto.mapper.CartMapper;
 import com.group2.library_management.dto.request.AddToCartRequest;
+import com.group2.library_management.dto.response.CartResponse;
 import com.group2.library_management.dto.response.CartUpdateResponse;
 import com.group2.library_management.entity.*;
 import com.group2.library_management.exception.CartQuantityLimitException;
@@ -20,7 +22,8 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
 
     private final CartRepository cartRepository;
     private final EditionRepository editionRepository;
-
+    private final CartMapper cartMapper;
+    
     private static final int MAX_QUANTITY_PER_EDITION = 2;
     private static final int MAX_TOTAL_ITEMS_IN_CART  = 5;
 
@@ -78,5 +81,14 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
         Cart newCart = new Cart();
         newCart.setUser(user);
         return cartRepository.save(newCart);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CartResponse viewCart() {
+        User currentUser = getCurrentUser();
+
+        Cart cart = cartRepository.findById(currentUser.getId()).orElseGet(() -> createNewCart(currentUser));
+        return cartMapper.toCartResponse(cart);
     }
 }
