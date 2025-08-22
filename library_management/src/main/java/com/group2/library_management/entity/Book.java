@@ -22,6 +22,9 @@ public class Book {
 
     private String description;
 
+    @Version
+    private Long version;
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BookGenre> bookGenres;
 
