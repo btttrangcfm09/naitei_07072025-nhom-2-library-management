@@ -4,8 +4,10 @@ import com.group2.library_management.common.constants.PaginationConstants;
 import com.group2.library_management.dto.enums.MatchMode;
 import com.group2.library_management.dto.mapper.BookMapper;
 import com.group2.library_management.dto.request.BookQueryParameters;
+import com.group2.library_management.dto.response.BookDetailResponse;
 import com.group2.library_management.dto.response.BookResponse;
 import com.group2.library_management.entity.Book;
+import com.group2.library_management.exception.ResourceNotFoundException;
 import com.group2.library_management.repository.BookRepository;
 import com.group2.library_management.repository.specification.BookSpecification;
 import com.group2.library_management.service.BookService;
@@ -81,5 +83,13 @@ public class BookServiceImpl implements BookService {
         Page<Book> bookPage = bookRepository.findAll(spec, pageable);
 
         return bookPage.map(bookMapper::toBookResponse);
+    }
+
+    @Override
+    public BookDetailResponse getBookById(Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        return bookMapper.toBookDetailResponse(book);
     }
 }

@@ -2,6 +2,7 @@ package com.group2.library_management.controller.api;
 
 import com.group2.library_management.dto.request.BookQueryParameters;
 import com.group2.library_management.dto.response.BaseApiResponse;
+import com.group2.library_management.dto.response.BookDetailResponse;
 import com.group2.library_management.dto.response.BookResponse;
 import com.group2.library_management.service.BookService;
 
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +48,21 @@ public class BookController {
                 successMessage
         );
         
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseApiResponse<BookDetailResponse>> getBookById(@PathVariable("id") Integer bookId) {
+        BookDetailResponse bookResponse = bookService.getBookById(bookId);
+
+        String successMessage = getMessage("success.book.get_detail");
+        
+        BaseApiResponse<BookDetailResponse> response = new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                bookResponse,
+                successMessage
+        );
+
         return ResponseEntity.ok(response);
     }
 }
