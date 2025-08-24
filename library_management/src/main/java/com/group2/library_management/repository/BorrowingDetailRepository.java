@@ -11,4 +11,6 @@ import com.group2.library_management.entity.BorrowingDetail;
 public interface BorrowingDetailRepository extends JpaRepository<BorrowingDetail, Integer>{
     boolean existsByBookInstanceId(Integer bookInstanceId);
     List<BorrowingDetail> findByBookInstanceId(Integer bookInstanceId);
+
+    List<BorrowingDetail> findByBorrowingReceiptId(Integer borrowingReceiptId);
 } 
