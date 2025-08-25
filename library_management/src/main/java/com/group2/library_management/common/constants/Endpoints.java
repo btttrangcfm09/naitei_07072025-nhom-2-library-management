@@ -52,6 +52,13 @@ public final class Endpoints {
             public static final String BASE_URL = BASE + "/borrowing-histories";
             public static final String GET_LIST_ACTION = "";
         }
+        
+        public static final class Borrowings {
+            private Borrowings() {}
+
+            public static final String BASE_URL = BASE + "/borrowings";
+            public static final String CREATE_REQUEST_ACTION = "/request";
+        }
     }
 
     public static final class Admin {
