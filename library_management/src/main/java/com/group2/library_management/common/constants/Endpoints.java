@@ -45,6 +45,13 @@ public final class Endpoints {
             public static final String BASE_URL = BASE + "/cart";
             public static final String ADD_ITEM_ACTION = "/add";
         }
+
+        public static final class BorrowingHistory {
+            private BorrowingHistory() {}
+
+            public static final String BASE_URL = BASE + "/borrowing-histories";
+            public static final String GET_LIST_ACTION = "";
+        }
     }
 
     public static final class Admin {
