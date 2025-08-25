@@ -1,4 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const el = document.getElementById("flashMessage");
+    if (el) {
+        setTimeout(() => {
+        el.style.transition = "opacity 0.5s";
+        el.style.opacity = 0;
+        setTimeout(() => el.remove(), 500);
+        }, 3000);
+    }
     const toggleButtons = document.querySelectorAll('.js-toggle-bookinstances');
     const bookInstancesTemplate = document.getElementById('bookinstances-table-template');
 
@@ -73,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create data rows
         bookInstances.forEach(bookInstance => {
             const row = document.createElement('tr');
+            const editUrl = `/admin/bookinstances/${bookInstance.id}/edit`;
             row.innerHTML = `
             <td class="col-sub-barcode">${bookInstance.barcode}</td>
             <td class="col-sub-callNumber">${bookInstance.callNumber}</td>
@@ -86,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         title="${i18n.tooltip.view}">
                         <i class="mdi mdi-eye"></i>
                     </a>                   
-                    <a href="#" class="text-primary" title="${i18n.tooltip.edit}"><i class="mdi mdi-pencil"></i></a>
+                    <a href="${editUrl}" class="text-primary" title="${i18n.tooltip.edit}"><i class="mdi mdi-pencil"></i></a>
                     <a href="#" class="text-danger js-delete-bookinstance" 
                        data-bookinstance-id="${bookInstance.id}"
                        data-bookinstance-barcode="${bookInstance.barcode}" 

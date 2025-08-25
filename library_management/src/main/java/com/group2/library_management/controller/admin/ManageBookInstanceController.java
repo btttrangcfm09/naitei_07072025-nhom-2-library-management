@@ -6,20 +6,33 @@ import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
+
+import com.group2.library_management.dto.mapper.BookInstanceMapper;
+import com.group2.library_management.dto.request.bookinstance.UpdateBookInstanceRequest;
 import com.group2.library_management.dto.response.EditionListResponse;
+import com.group2.library_management.entity.BookInstance;
+import com.group2.library_management.exception.ConcurrencyException;
 import com.group2.library_management.exception.ImportValidationException;
+import com.group2.library_management.exception.ResourceNotFoundException;
+import com.group2.library_management.service.BookInstanceService;
 import com.group2.library_management.service.EditionService;
 import com.group2.library_management.service.impl.BookImportService;
 import com.group2.library_management.util.ConstUtil;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +41,25 @@ import org.springframework.data.domain.Sort;
 @Controller
 @RequestMapping("/admin/bookinstances")
 @RequiredArgsConstructor
+// @PreAuthorize("hasRole('ADMIN')")
+// commented because we have not implemented security yet
 public class ManageBookInstanceController {
+    
+    // service
     private final BookImportService bookImportService;
-    private final MessageSource messageSource;
     private final EditionService editionService;
+    private final BookInstanceService bookInstanceService;
+    
+    // mapper
+    private final BookInstanceMapper bookInstanceMapper;    
+
+    // view
+    private static final String VIEW_BOOKINSTANCE_EDIT = "admin/bookinstances/edit";
+    private static final String REDIRECT_TO_BOOKINSTANCE_LIST = "redirect:/admin/bookinstances";
+
+    // message
+    private final MessageSource messageSource;
+
     @GetMapping
     public String showEditionList(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -61,5 +89,34 @@ public class ManageBookInstanceController {
         String successMessage = messageSource.getMessage("upload.file.success", null, locale);
         redirectAttributes.addFlashAttribute("successMessage", successMessage);
         return "redirect:/admin/bookinstances";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showBookInstanceEditForm(@PathVariable Integer id, Model model) throws ResourceNotFoundException {
+        BookInstance bookInstance = bookInstanceService.getBookInstanceById(id);
+        UpdateBookInstanceRequest updateBookInstanceRequest = bookInstanceMapper.maptoUpdateBookInstanceRequest(bookInstance);
+        model.addAttribute("bookInstance", bookInstance);
+        model.addAttribute("bookInstanceRequest", updateBookInstanceRequest);
+        return VIEW_BOOKINSTANCE_EDIT;
+    }
+
+    @PutMapping("/{id}/edit")
+    public String processBookInstanceUpdate(@PathVariable Integer id,
+                                            @Valid @ModelAttribute("bookInstanceRequest") UpdateBookInstanceRequest request,
+                                            BindingResult bindingResult,
+                                            RedirectAttributes redirectAttributes,
+                                            Model model) 
+                                            throws IllegalArgumentException, ResourceNotFoundException, MethodArgumentNotValidException, ConcurrencyException {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("bookInstance", bookInstanceService.getBookInstanceById(id));
+            return VIEW_BOOKINSTANCE_EDIT;
+        }
+
+        bookInstanceService.updateBookInstance(id, request);
+        redirectAttributes.addFlashAttribute(
+            "successMessage",
+            messageSource.getMessage("admin.bookinstances.message.update_success", new Object[] {request.barcode()}, LocaleContextHolder.getLocale())
+        );
+        return REDIRECT_TO_BOOKINSTANCE_LIST;
     }
 }

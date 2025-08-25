@@ -3,6 +3,8 @@ package com.group2.library_management.dto.mapper;
 import java.util.Optional;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import com.group2.library_management.dto.request.bookinstance.*;
 import com.group2.library_management.dto.response.BookInstanceDetailResponse;
@@ -42,4 +44,8 @@ public abstract class BookInstanceMapper {
         });
         return bookInstanceDetailResponse.build();
     }
+
+    public abstract UpdateBookInstanceRequest maptoUpdateBookInstanceRequest(BookInstance bookInstance);
+
+    public abstract void updateFromRequest(UpdateBookInstanceRequest request, @MappingTarget BookInstance bookInstance);
 }
