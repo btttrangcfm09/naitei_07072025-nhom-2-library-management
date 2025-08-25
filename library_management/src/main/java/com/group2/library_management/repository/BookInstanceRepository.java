@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.enums.BookStatus;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 @Repository
-public interface BookInstanceRepository extends ListCrudRepository<BookInstance, Integer> {
+public interface BookInstanceRepository extends ListCrudRepository<BookInstance, Integer>,  JpaSpecificationExecutor<BookInstance> {
     Boolean existsByBarcode(String barcode);
     List<BookInstance> findByEditionIdOrderByAcquiredDateDesc(Integer editionId);
 

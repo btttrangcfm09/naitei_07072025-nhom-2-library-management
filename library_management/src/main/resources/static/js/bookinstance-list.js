@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setupDeleteHandler(i18n);
     setupViewHandler(i18n);
-
+    setupFilterLogic();
     function createBookInstancesTable(bookInstances, i18n) {
         // Clone template's content
         const templateContent = bookInstancesTemplate.content.cloneNode(true);
@@ -218,4 +218,52 @@ function populateBookInstanceModal(data, i18n) {
     const statusText = formatStatus(data.status, i18n.status, false); 
     setTextContentById('modal-bookinstance-status', statusText);
     setTextContentById('modal-bookinstance-note', data.note ||  'Không có ghi chú.');
+}
+
+function setupFilterLogic() {
+
+    const filterBySelect = document.getElementById('filterBy');
+    const keywordInput = document.getElementById('keyword');
+
+    const dateRangeFilter = document.getElementById('date-range-filter');
+    const fromDateInput = document.getElementById('fromDate');
+    const toDateInput = document.getElementById('toDate');
+
+    const statusRangeFilter = document.getElementById('status-range-filter'); 
+    const statusInput = document.getElementById('status');
+
+
+    if (!filterBySelect || !dateRangeFilter || !statusRangeFilter) {
+        console.error("Không tìm thấy các element cần thiết cho form filter. Kiểm tra lại ID trong HTML.");
+        return;
+    }
+
+    function updateFormFields() {
+        const selectedValue = filterBySelect.value;
+
+        if (selectedValue === 'book_instance') {
+            dateRangeFilter.style.display = 'flex';
+            statusRangeFilter.style.display = 'flex';
+            if (keywordInput) keywordInput.placeholder = 'Barcode hoặc Call Number...';
+        } else { // 'edition'
+
+            dateRangeFilter.style.cssText = "display: none !important;";
+            statusRangeFilter.style.cssText = "display: none !important;";
+
+            if (fromDateInput) {
+                fromDateInput.value = '';
+            }
+            if (toDateInput) {
+                toDateInput.value = '';
+            }
+            if (statusInput) {
+                statusInput.value = ''; 
+            }
+
+            if (keywordInput) keywordInput.placeholder = 'Nhập tên sách, tên nhà xuất bản...';
+        }
+    }
+
+    updateFormFields();
+    filterBySelect.addEventListener('change', updateFormFields);
 }
