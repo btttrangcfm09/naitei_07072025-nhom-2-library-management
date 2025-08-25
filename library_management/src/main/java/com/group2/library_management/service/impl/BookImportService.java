@@ -126,15 +126,15 @@ public class BookImportService extends ExcelImportService<BookInstance>{
     }
 
     // Xử lý điều kiện barcode
-    private void isValidBarcode(String barcode, Set<String> processedBarcodes) throws DuplicateBarcodeException, ResourceNotFoundException {
-                //Kiểm tra xem barcode đã gặp trong file này chưa
+    private void isValidBarcode(String barcode, Set<String> processedBarcodes) throws DuplicateBarcodeException {
+        //Kiểm tra xem barcode đã gặp trong file này chưa
         if (processedBarcodes.contains(barcode)) {
             throw new DuplicateBarcodeException(barcode);
         }
         // Nếu chưa, kiểm tra trong database
         Boolean existsBarcodeInDb = bookInstanceRepository.existsByBarcode(barcode);
         if (existsBarcodeInDb) {
-            throw new ResourceNotFoundException(barcode, "Barcode");
+            throw new DuplicateBarcodeException(barcode);
         }
     }
 }
