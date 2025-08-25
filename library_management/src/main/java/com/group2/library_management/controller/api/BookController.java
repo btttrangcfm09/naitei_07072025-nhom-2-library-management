@@ -1,5 +1,6 @@
 package com.group2.library_management.controller.api;
 
+import com.group2.library_management.common.constants.Endpoints;
 import com.group2.library_management.dto.request.BookQueryParameters;
 import com.group2.library_management.dto.response.BaseApiResponse;
 import com.group2.library_management.dto.response.BookDetailResponse;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("apiBookController")
-@RequestMapping("/api/v1/books")
+@RequestMapping(Endpoints.ApiV1.Books.BASE_URL)
 @RequiredArgsConstructor
 @Validated 
 public class BookController {
@@ -51,7 +52,7 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(Endpoints.ApiV1.Books.BY_ID_ACTION)
     public ResponseEntity<BaseApiResponse<BookDetailResponse>> getBookById(@PathVariable("id") Integer bookId) {
         BookDetailResponse bookResponse = bookService.getBookById(bookId);
 

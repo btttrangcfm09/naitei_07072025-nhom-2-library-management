@@ -1,5 +1,6 @@
 package com.group2.library_management.controller.api;
 
+import com.group2.library_management.common.constants.Endpoints;
 import com.group2.library_management.dto.request.AddToCartRequest;
 import com.group2.library_management.dto.response.BaseApiResponse;
 import com.group2.library_management.dto.response.CartResponse;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping(Endpoints.ApiV1.Cart.BASE_URL)
 @RequiredArgsConstructor
 public class CartController {
 
@@ -45,7 +46,7 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/add")
+    @PostMapping(Endpoints.ApiV1.Cart.ADD_ITEM_ACTION)
     public ResponseEntity<BaseApiResponse<CartUpdateResponse>> addToCart(@Valid @RequestBody AddToCartRequest request) {
         CartUpdateResponse cartUpdateResponse = cartService.addToCart(request);
         
