@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.group2.library_management.dto.response.*;
 import com.group2.library_management.dto.response.BookInstanceResponse;
 import com.group2.library_management.exception.BookInstanceNotFoundException;
 import com.group2.library_management.exception.CannotDeleteResourceException;
@@ -44,5 +44,11 @@ public class BookInstanceApiController {
             throws BookInstanceNotFoundException, CannotDeleteResourceException {
         bookInstanceService.deleteBookInstanceByBookInstanceId(id);
         return ResponseEntity.ok(Map.of("message", getMessage("admin.bookinstance.delete.success.message")));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookInstanceDetailResponse> getBookInstanceDetail(@PathVariable Integer id) throws BookInstanceNotFoundException{
+        BookInstanceDetailResponse bookInstanceDetailResponse = bookInstanceService.getBookInstanceDetail(id);
+        return ResponseEntity.ok(bookInstanceDetailResponse);
     }
 }
