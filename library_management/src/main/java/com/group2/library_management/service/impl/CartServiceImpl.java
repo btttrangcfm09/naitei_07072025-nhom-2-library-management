@@ -14,11 +14,15 @@ import com.group2.library_management.repository.EditionRepository;
 import com.group2.library_management.service.AbstractBaseService;
 import com.group2.library_management.service.CartService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CartServiceImpl extends AbstractBaseService implements CartService {
 
     private final CartRepository cartRepository;
@@ -86,7 +90,6 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
     }
 
     @Override
-    @Transactional(readOnly = true)
     public CartResponse viewCart() {
         User currentUser = getCurrentUser();
 
@@ -109,6 +112,21 @@ public class CartServiceImpl extends AbstractBaseService implements CartService 
 
         cart.removeItem(cartItem);
         cartRepository.save(cart);
+
+        return cartMapper.toCartResponse(cart);
+    }
+
+    @Override
+    @Transactional 
+    public CartResponse clearCart() {
+        User currentUser = getCurrentUser();
+
+        Cart cart = cartRepository.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found for user: " + currentUser.getId()));
+
+        if (!cart.getItems().isEmpty()) {
+            cart.getItems().clear();
+            cartRepository.save(cart);
+        }
 
         return cartMapper.toCartResponse(cart);
     }
