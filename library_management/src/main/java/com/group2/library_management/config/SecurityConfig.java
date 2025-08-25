@@ -1,5 +1,6 @@
 package com.group2.library_management.config;
 
+import com.group2.library_management.common.constants.Endpoints;
 import com.group2.library_management.service.JpaUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -77,8 +78,12 @@ public class SecurityConfig {
             .securityMatcher("/api/**")
             .authorizeHttpRequests(authorize -> {
                 authorize
-                    .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/books", "/api/v1/books/{id}").permitAll()
+                    .requestMatchers(
+                        Endpoints.ApiV1.Auth.REGISTER_ENDPOINT, 
+                        Endpoints.ApiV1.Auth.LOGIN_ENDPOINT, 
+                        Endpoints.ApiV1.Auth.REFRESH_ENDPOINT
+                    ).permitAll()
+                    .requestMatchers(HttpMethod.GET, Endpoints.ApiV1.Books.ALL_BOOKS_PATHS).permitAll()
                     .anyRequest().authenticated();
             })
             .csrf(AbstractHttpConfigurer::disable)

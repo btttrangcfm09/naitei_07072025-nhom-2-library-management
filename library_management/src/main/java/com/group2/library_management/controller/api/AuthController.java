@@ -13,12 +13,14 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.group2.library_management.common.constants.Endpoints;
 import com.group2.library_management.dto.request.LoginRequest;
 import com.group2.library_management.dto.response.LoginResponse;
 import com.group2.library_management.dto.response.TokenRefreshResponse;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(Endpoints.ApiV1.Auth.BASE_URL)
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -29,7 +31,7 @@ public class AuthController {
         return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
     }
 
-    @PostMapping("/register")
+    @PostMapping(Endpoints.ApiV1.Auth.REGISTER_ACTION)
     public ResponseEntity<BaseApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request) {
         UserResponse registeredUser = authService.register(request);
 
@@ -43,7 +45,7 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
+    @PostMapping(Endpoints.ApiV1.Auth.LOGIN_ACTION)
     public ResponseEntity<BaseApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse loginResponse = authService.login(request);
 
@@ -57,7 +59,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/refresh")
+    @PostMapping(Endpoints.ApiV1.Auth.REFRESH_ACTION)
     public ResponseEntity<BaseApiResponse<TokenRefreshResponse>> refreshToken(
             @Valid @RequestBody TokenRefreshRequest request) {
         TokenRefreshResponse refreshResponse = authService.refreshToken(request);
@@ -72,7 +74,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/logout")
+    @PostMapping(Endpoints.ApiV1.Auth.LOGOUT_ACTION)
     public ResponseEntity<BaseApiResponse<Object>> logout() {
         authService.logout();
 
