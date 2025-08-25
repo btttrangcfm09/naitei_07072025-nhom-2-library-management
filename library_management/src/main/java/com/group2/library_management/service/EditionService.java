@@ -10,4 +10,5 @@ public interface EditionService {
     Page<EditionListResponse> getAllEditions(Pageable pageable);
     List<EditionResponse> getEditionsByBookId(Integer bookId);
     EditionDetailResponse getEditionDetailById(Integer id);
+    void deleteEdition(Integer id);
 }

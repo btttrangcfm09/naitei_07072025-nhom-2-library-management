@@ -3,6 +3,9 @@ package com.group2.library_management.exception;
 import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,10 +15,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @ControllerAdvice(basePackages = "com.group2.library_management.controller.admin")
+@RequiredArgsConstructor
 public class WebExceptionHandler {
-    
+
+    private final MessageSource messageSource;
+
     @ExceptionHandler(Exception.class)
     public ModelAndView handleWebException(HttpServletRequest req, Exception ex) {
         ModelAndView mav = new ModelAndView();
@@ -86,4 +93,42 @@ public class WebExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OperationFailedException.class)
+    public String handleOperationFailedException(OperationFailedException ex, 
+                                                 RedirectAttributes redirectAttributes,
+                                                 HttpServletRequest request) {
+        
+        String messageKey = ex.getMessage();
+        
+        String localizedErrorMessage = messageSource.getMessage(
+            messageKey, 
+            null, 
+            ex.getMessage(),
+            LocaleContextHolder.getLocale()
+        );
+
+        redirectAttributes.addFlashAttribute("errorMessage", localizedErrorMessage);
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/admin/dashboard");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Object handleDataIntegrity(DataIntegrityViolationException ex,
+                                      RedirectAttributes redirectAttributes,
+                                      HttpServletRequest request) {
+        String msg = messageSource.getMessage("admin.editions.message.cannot_delete",
+                                              null,
+                                              ex.getMessage(),
+                                              LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("errorMessage", msg);
+
+        String referer = request.getHeader("Referer");
+
+        if (referer != null && !referer.isEmpty()) {
+
+            return "redirect:" + referer;
+        }
+        return "redirect:/";
+    }
 }

@@ -5,15 +5,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Collections;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.group2.library_management.dto.response.EditionDetailResponse;
 import com.group2.library_management.dto.response.EditionListResponse;
+import com.group2.library_management.dto.response.EditionResponse;
 import com.group2.library_management.entity.Book;
 import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.Publisher;
+import com.group2.library_management.entity.enums.DeletionStatus;
 import com.group2.library_management.service.EnumDisplayService;
 
 import lombok.RequiredArgsConstructor;
@@ -77,4 +80,13 @@ public abstract class EditionMapper {
                 edition.getAvailableQuantity()
         );
     }
+
+    /**
+     * @param edition Entity source
+     * @param deletionStatus delete status
+     * @return DTO to show on sub-table.
+     */
+    @Mapping(source = "edition.publisher.name", target = "publisherName")
+    @Mapping(source = "edition.publicationDate.year", target = "publicationYear")
+    public abstract EditionResponse toResponseDto(Edition edition, DeletionStatus deletionStatus);
 } 
