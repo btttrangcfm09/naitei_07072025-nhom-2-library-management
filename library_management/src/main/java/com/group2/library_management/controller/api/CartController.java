@@ -12,6 +12,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +53,20 @@ public class CartController {
         BaseApiResponse<CartUpdateResponse> response = new BaseApiResponse<>(
                 HttpStatus.OK.value(),
                 cartUpdateResponse,
+                successMessage
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/items/{cartItemId}")
+    public ResponseEntity<BaseApiResponse<CartResponse>> removeItemFromCart(@PathVariable Integer cartItemId) {
+        CartResponse cartResponse = cartService.removeItemFromCart(cartItemId);
+        
+        String successMessage = getMessage("success.cart.remove_item");
+        BaseApiResponse<CartResponse> response = new BaseApiResponse<>(
+                HttpStatus.OK.value(),
+                cartResponse,
                 successMessage
         );
         
