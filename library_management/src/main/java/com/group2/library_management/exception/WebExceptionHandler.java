@@ -81,6 +81,22 @@ public class WebExceptionHandler {
         return "redirect:/"; 
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleIllegalArgumentException(
+            IllegalArgumentException ex,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
+
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+
+        String referer = request.getHeader("Referer");
+
+        if (referer != null && !referer.isEmpty()) {
+            return "redirect:" + referer;
+        }
+        return "redirect:/";
+    }
+
     @ExceptionHandler(CannotDeleteResourceException.class)
     public ResponseEntity<Map<String, String>> handleCannotDeleteResource(CannotDeleteResourceException ex, WebRequest request){
         Map<String, String> errorDetails = Map.of("error", ex.getMessage());
