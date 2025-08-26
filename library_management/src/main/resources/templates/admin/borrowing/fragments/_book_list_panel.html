@@ -1,58 +1,579 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<body>
-
-<div th:fragment="bookListPanel(receipt)">
-    <div class="row">
+  <body>
+    <div th:fragment="bookListPanel(receipt)">
+      <div class="row">
         <div class="col-12 grid-margin">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title" th:text="#{admin.borrowing.books.title}">Danh Sách Các Sách Được Yêu Cầu</h4>
-                    <div>
-                        <table class="table table-hover book-info-table">
-                            <thead>
-                            <tr>
-                                <th class="col-title" th:text="#{admin.borrowing.books.table.book_name}">Tên sách</th>
-                                <th class="col-isbn">ISBN</th>
-                                <th class="col-barcode" th:text="#{admin.borrowing.books.table.barcode}">Mã vạch</th>
-                                <th class="col-status" th:text="#{admin.borrowing.books.table.status}">Trạng thái</th>
-                                <th class="col-location" th:text="#{admin.borrowing.books.table.location}">Vị trí</th>
-                                <th class="col-price" th:text="#{admin.borrowing.books.table.price}">Giá sách</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:if="${receipt.borrowingDetails() == null or #lists.isEmpty(receipt.borrowingDetails())}">
-                                <td colspan="6" class="text-center py-3" th:text="#{admin.borrowing.books.no_books}">Không có cuốn sách nào
-                                    trong phiếu mượn này.
-                                </td>
-                            </tr>
-                            <tr th:each="detail : ${receipt.borrowingDetails()}">
-                                <td class="col-title">
-                                    <a th:href="@{/admin/editions/{id}(id=${detail.editionId()})}"
-                                       th:text="${detail.title()}"
-                                       target="_blank"
-                                       th:title="#{admin.borrowing.books.view_detail}"></a>
-                                </td>
-                                <td class="col-isbn" th:text="${detail.isbn()}"></td>
-                                <td class="col-barcode" th:text="${detail.barcode()}"></td>
-                                <td class="col-status">
-                                     <span class="badge"
-                                           th:classappend="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE ? 'badge-success' :
-                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).BORROWED ? 'badge-primary' : 'badge-secondary'}"
-                                           th:text="${@enumDisplayService.getBookStatusDisplayName(detail.status())}"></span>
-                                </td>
-                                <td class="col-location" th:text="${detail.callNumber()}"></td>
-                                <td class="col-price"
-                                    th:text="${detail.acquiredPrice() != null ? #numbers.formatDecimal(detail.acquiredPrice(), 0, 'COMMA', 0, 'POINT') + '₫' : 'N/A'}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title" th:text="#{admin.borrowing.books.title}">
+                Danh Sách Các Sách Được Yêu Cầu
+              </h4>
 
-</body>
+              <div
+                th:if="${receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).APPROVED or 
+                                 receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED or
+                                 receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE}"
+              >
+                <form id="updateBorrowingForm">
+                  <div>
+                    <table class="table table-hover book-info-table">
+                      <thead class="thead-light">
+                        <tr>
+                          <th
+                            class="col-title"
+                            style="width: 18%"
+                            th:text="#{admin.borrowing.books.table.book_name}"
+                          >
+                            Tên sách
+                          </th>
+                          <th
+                            class="col-book-info"
+                            style="width: 20%"
+                            th:text="#{admin.borrowing.books.table.book_info}"
+                          >
+                            Thông tin sách
+                          </th>
+                          <th
+                            class="col-status text-center"
+                            style="width: 16%"
+                            th:text="#{admin.borrowing.books.table.status}"
+                          >
+                            Trạng thái
+                          </th>
+                          <th
+                            class="col-status-action"
+                            style="width: 18%"
+                            th:text="#{admin.borrowing.books.table.condition}"
+                          >
+                            Tình trạng
+                          </th>
+                          <th
+                            class="col-due-date text-center"
+                            style="width: 14%"
+                            th:text="#{admin.borrowing.books.table.due_date}"
+                          >
+                            Ngày hẹn trả
+                          </th>
+                          <th
+                            class="col-extend-action"
+                            style="width: 14%"
+                            th:text="#{admin.borrowing.books.table.extend}"
+                          >
+                            Gia hạn
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          th:if="${receipt.borrowingDetails() == null or #lists.isEmpty(receipt.borrowingDetails())}"
+                        >
+                          <td
+                            colspan="6"
+                            class="text-center py-3"
+                            th:text="#{admin.borrowing.books.no_books}"
+                          >
+                            Không có cuốn sách nào trong phiếu mượn này.
+                          </td>
+                        </tr>
+                        <tr
+                          th:each="detail : ${receipt.borrowingDetails()}"
+                          th:data-detail-id="${detail.id()}"
+                        >
+                          <td class="col-title align-middle">
+                            <h6 class="mb-0 font-weight-medium">
+                              <a
+                                th:href="@{/admin/editions/{id}(id=${detail.editionId()})}"
+                                th:text="${detail.title()}"
+                                target="_blank"
+                                class="text-primary text-decoration-none"
+                                th:title="#{admin.borrowing.books.view_detail}"
+                              ></a>
+                            </h6>
+                          </td>
+                          <td class="col-book-info align-middle">
+                            <div class="small">
+                              <div class="mb-2 d-flex align-items-center">
+                                <i class="mdi mdi-barcode text-info mr-2"></i>
+                                <span
+                                  class="font-weight-bold text-dark mr-1"
+                                  th:text="#{admin.borrowing.books.info.isbn}"
+                                  >ISBN:</span
+                                >
+                                <span
+                                  th:text="${detail.isbn() ?: 'N/A'}"
+                                  class="text-dark font-weight-normal text-truncate"
+                                  style="max-width: 120px"
+                                ></span>
+                              </div>
+                              <div class="mb-2 d-flex align-items-center">
+                                <i class="mdi mdi-qrcode text-success mr-2"></i>
+                                <div
+                                  class="d-flex align-items-center"
+                                  style="white-space: nowrap"
+                                >
+                                  <span
+                                    class="font-weight-bold text-dark mr-1"
+                                    th:text="#{admin.borrowing.books.info.barcode}"
+                                    >Mã vạch:</span
+                                  >
+                                  <span
+                                    th:text="${detail.barcode() ?: 'N/A'}"
+                                    class="text-dark font-weight-normal text-truncate"
+                                    style="max-width: 100px; flex-shrink: 0"
+                                  ></span>
+                                </div>
+                              </div>
+                              <div class="mb-0 d-flex align-items-center">
+                                <i
+                                  class="mdi mdi-map-marker text-warning mr-2"
+                                ></i>
+                                <span
+                                  class="font-weight-bold text-dark mr-1 text-nowrap"
+                                  th:text="#{admin.borrowing.books.info.location}"
+                                  >Vị trí:</span
+                                >
+                                <span
+                                  th:text="${detail.callNumber() ?: 'N/A'}"
+                                  class="text-dark font-weight-normal text-nowrap"
+                                ></span>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="col-status align-middle text-center">
+                            <span
+                              class="badge badge-pill px-3 py-2"
+                              th:classappend="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE ? 'badge-success' :
+                                                  detail.status() == T(com.group2.library_management.entity.enums.BookStatus).BORROWED ? 'badge-primary' :
+                                                  detail.status() == T(com.group2.library_management.entity.enums.BookStatus).RESERVED ? 'badge-info' : 
+                                                  detail.status() == T(com.group2.library_management.entity.enums.BookStatus).LOST ? 'badge-danger' :
+                                                  detail.status() == T(com.group2.library_management.entity.enums.BookStatus).DAMAGED ? 'badge-warning' : 'badge-secondary'}"
+                              th:text="${@enumDisplayService.getBookStatusDisplayName(detail.status())}"
+                            ></span>
+                          </td>
+                          <td class="col-status-action align-middle">
+                            <div class="px-1">
+                              <div th:if="${detail.actualReturnDate() == null}">
+                                <select
+                                  class="form-control form-control-sm status-dropdown shadow-sm"
+                                  th:data-detail-id="${detail.id()}"
+                                  style="
+                                    border-radius: 6px;
+                                    border: 1px solid #e3e6f0;
+                                    font-size: 12px;
+                                  "
+                                >
+                                  <option
+                                    value=""
+                                    class="text-center"
+                                    th:text="#{admin.borrowing.books.dropdown.select}"
+                                  >
+                                    -- Chọn --
+                                  </option>
+
+                                  <th:block
+                                    th:if="${receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).APPROVED}"
+                                  >
+                                    <option
+                                      value="BORROWED"
+                                      class="text-center"
+                                      th:disabled="${detail.status() != T(com.group2.library_management.entity.enums.BookStatus).RESERVED}"
+                                      th:text="#{admin.borrowing.books.dropdown.picked_up}"
+                                    >
+                                      Đã lấy
+                                    </option>
+                                    <option
+                                      value="NOT_BORROWED"
+                                      class="text-center"
+                                      th:disabled="${detail.status() != T(com.group2.library_management.entity.enums.BookStatus).RESERVED}"
+                                      th:text="#{admin.borrowing.books.dropdown.not_picked_up}"
+                                    >
+                                      Không lấy
+                                    </option>
+                                  </th:block>
+
+                                  <th:block
+                                    th:if="${(receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED or 
+                                                    receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE) and 
+                                                    (detail.status() == T(com.group2.library_management.entity.enums.BookStatus).BORROWED)}"
+                                  >
+                                    <option
+                                      value="RETURN"
+                                      class="text-center"
+                                      th:text="#{admin.borrowing.books.dropdown.returned}"
+                                    >
+                                      Đã trả
+                                    </option>
+                                    <option
+                                      value="LOST"
+                                      class="text-center"
+                                      th:text="#{admin.borrowing.books.dropdown.lost}"
+                                    >
+                                      Báo mất
+                                    </option>
+                                    <option
+                                      value="DAMAGED"
+                                      class="text-center"
+                                      th:text="#{admin.borrowing.books.dropdown.damaged}"
+                                    >
+                                      Báo hỏng
+                                    </option>
+                                  </th:block>
+                                </select>
+
+                                <div
+                                  class="form-group return-date-group mt-2"
+                                  th:data-detail-id="${detail.id()}"
+                                  style="display: none"
+                                >
+                                  <label
+                                    class="small text-muted mb-1"
+                                    style="font-size: 10px"
+                                    th:text="#{admin.borrowing.books.return_date_label}"
+                                  >
+                                    Ngày trả:
+                                  </label>
+                                  <input
+                                    type="date"
+                                    class="form-control form-control-xs return-date-input shadow-sm"
+                                    th:data-detail-id="${detail.id()}"
+                                    style="
+                                      border-radius: 4px;
+                                      border: 1px solid #e3e6f0;
+                                      font-size: 11px;
+                                      padding: 2px 6px;
+                                      height: 28px;
+                                    "
+                                    th:max="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                                  />
+                                </div>
+                              </div>
+
+                              <div
+                                th:if="${detail.actualReturnDate() != null}"
+                                class="mt-1 small"
+                                style="font-size: 11px"
+                              >
+                                <div
+                                  th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE}"
+                                  class="text-success"
+                                >
+                                  <span
+                                    th:text="#{admin.borrowing.books.status.returned} + ' ' + ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yy HH:mm')}"
+                                  ></span>
+                                </div>
+
+                                <div
+                                  th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).LOST}"
+                                  class="text-danger"
+                                >
+                                  <span
+                                    th:text="#{admin.borrowing.books.status.lost} + ' ' + ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yyyy HH:mm')}"
+                                  ></span>
+                                </div>
+
+                                <div
+                                  th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).DAMAGED}"
+                                  class="text-warning"
+                                >
+                                  <span
+                                    th:text="#{admin.borrowing.books.status.damaged} + ' ' + ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yyyy HH:mm')}"
+                                  ></span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="col-due-date align-middle text-center">
+                            <span
+                              class="badge px-3 py-2 font-weight-medium due-date-display"
+                              th:classappend="${receipt.dueDate() != null and #temporals.createNow().isAfter(receipt.dueDate()) ? 'badge-danger' : 'badge-outline-info'}"
+                              th:text="${receipt.dueDate() != null ? #temporals.format(receipt.dueDate(), 'dd/MM/yyyy') : 'Chưa xác định'}"
+                            ></span>
+                          </td>
+                          <td
+                            class="col-extend-action align-middle text-center"
+                          >
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-info extend-btn rounded-pill shadow-sm"
+                              th:disabled="${detail.actualReturnDate() != null or
+                                                                detail.status() == T(com.group2.library_management.entity.enums.BookStatus).LOST or
+                                                                detail.status() == T(com.group2.library_management.entity.enums.BookStatus).DAMAGED or
+                                                                detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE or
+                                                                (receipt.status() != T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED and 
+                                                                 receipt.status() != T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE)}"
+                              style="
+                                border-width: 1px;
+                                font-size: 12px;
+                                padding: 4px 12px;
+                              "
+                            >
+                              <i class="mdi mdi-calendar-clock mr-1"></i>
+                              <span
+                                class="font-weight-medium"
+                                th:text="#{admin.borrowing.books.button.extend}"
+                                >Gia hạn</span
+                              >
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="mt-4 text-center border-top pt-3">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-lg rounded-pill shadow-sm"
+                      id="updateReceiptBtn"
+                    >
+                      <i class="mdi mdi-content-save mr-2"></i>
+                      <span
+                        th:text="#{admin.borrowing.books.button.update_receipt}"
+                        >Cập nhật phiếu mượn</span
+                      >
+                      <i class="mdi mdi-arrow-right ml-2"></i>
+                    </button>
+                    <div class="small text-muted mt-2">
+                      <i
+                        class="mdi mdi-information-outline mr-1"
+                        th:attr="title=#{admin.borrowing.books.update_receipt_help}"
+                      ></i>
+                      <span
+                        th:text="#{admin.borrowing.books.update_receipt_hint}"
+                      ></span>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div
+                th:unless="${receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).APPROVED or 
+                                     receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).BORROWED or
+                                     receipt.status() == T(com.group2.library_management.entity.enums.BorrowingStatus).OVERDUE}"
+              >
+                <table class="table table-hover book-info-table">
+                  <thead>
+                    <tr>
+                      <th
+                        class="col-title"
+                        style="width: 16%"
+                        th:text="#{admin.borrowing.books.table.book_name}"
+                      >
+                        Tên sách
+                      </th>
+                      <th
+                        class="col-isbn"
+                        style="width: 14%"
+                        th:text="#{admin.borrowing.books.table.isbn}"
+                      >
+                        ISBN
+                      </th>
+                      <th
+                        class="col-barcode"
+                        style="width: 14%"
+                        th:text="#{admin.borrowing.books.table.barcode}"
+                      >
+                        Mã vạch
+                      </th>
+                      <th
+                        class="col-status"
+                        style="width: 15%"
+                        th:text="#{admin.borrowing.books.table.status}"
+                      >
+                        Trạng thái
+                      </th>
+                      <th
+                        class="col-location"
+                        style="width: 14%"
+                        th:text="#{admin.borrowing.books.table.location}"
+                      >
+                        Vị trí
+                      </th>
+                      <th
+                        class="col-price"
+                        style="width: 14%"
+                        th:text="#{admin.borrowing.books.table.price}"
+                      >
+                        Giá sách
+                      </th>
+                      <th
+                        class="col-return-info"
+                        style="width: 13%"
+                        th:text="#{admin.borrowing.books.table.processing}"
+                      >
+                        Xử lý
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      th:if="${receipt.borrowingDetails() == null or #lists.isEmpty(receipt.borrowingDetails())}"
+                    >
+                      <td
+                        colspan="7"
+                        class="text-center py-3"
+                        th:text="#{admin.borrowing.books.no_books}"
+                      >
+                        Không có cuốn sách nào trong phiếu mượn này.
+                      </td>
+                    </tr>
+                    <tr th:each="detail : ${receipt.borrowingDetails()}">
+                      <td class="col-title">
+                        <a
+                          th:href="@{/admin/editions/{id}(id=${detail.editionId()})}"
+                          th:text="${detail.title()}"
+                          target="_blank"
+                          th:title="#{admin.borrowing.books.view_detail}"
+                        ></a>
+                      </td>
+                      <td
+                        class="col-isbn"
+                        th:text="${detail.isbn() ?: 'N/A'}"
+                      ></td>
+                      <td
+                        class="col-barcode"
+                        th:text="${detail.barcode() ?: 'N/A'}"
+                      ></td>
+                      <td class="col-status">
+                        <span
+                          class="badge"
+                          th:classappend="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE ? 'badge-success' :
+                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).BORROWED ? 'badge-primary' :
+                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).RESERVED ? 'badge-info' :
+                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).LOST ? 'badge-danger' :
+                                           detail.status() == T(com.group2.library_management.entity.enums.BookStatus).DAMAGED ? 'badge-warning' : 'badge-secondary'}"
+                          th:text="${@enumDisplayService.getBookStatusDisplayName(detail.status())}"
+                        ></span>
+                      </td>
+                      <td
+                        class="col-location"
+                        th:text="${detail.callNumber() ?: 'N/A'}"
+                      ></td>
+                      <td
+                        class="col-price"
+                        th:text="${detail.acquiredPrice() != null ? #numbers.formatDecimal(detail.acquiredPrice(), 0, 'COMMA', 0, 'POINT') + '₫' : 'N/A'}"
+                      ></td>
+
+                      <td class="col-return-info">
+                        <div
+                          class="small"
+                          style="font-size: 11px; font-weight: 500"
+                        >
+                          <th:block
+                            th:if="${detail.actualReturnDate() != null}"
+                          >
+                            <div
+                              th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).AVAILABLE}"
+                              class="text-success"
+                            >
+                              <span
+                                th:text="#{admin.borrowing.books.status.returned} + ' '+ ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yy HH:mm')}"
+                              ></span>
+                            </div>
+
+                            <div
+                              th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).LOST}"
+                              class="text-danger"
+                            >
+                              <span
+                                th:text="#{admin.borrowing.books.status.lost} + ' ' + ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yyyy HH:mm')}"
+                              ></span>
+                            </div>
+
+                            <div
+                              th:if="${detail.status() == T(com.group2.library_management.entity.enums.BookStatus).DAMAGED}"
+                              class="text-warning"
+                            >
+                              <span
+                                th:text="#{admin.borrowing.books.status.damaged} + ' ' + ${#temporals.format(detail.actualReturnDate(), 'dd/MM/yyyy HH:mm')}"
+                              ></span>
+                            </div>
+                          </th:block>
+
+                          <div
+                            th:if="${detail.actualReturnDate() == null}"
+                            class="text-muted"
+                          >
+                            <span
+                              th:text="#{admin.borrowing.books.status.not_processed}"
+                              >Chưa xử lý</span
+                            >
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="modal fade"
+        id="extendModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="extendModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="extendModalLabel">Gia hạn sách</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="extendDays">Số ngày muốn gia hạn thêm:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="extendDays"
+                  min="1"
+                  value="7"
+                />
+                <small
+                  class="form-text text-danger"
+                  id="extendError"
+                  style="display: none"
+                ></small>
+                <small class="form-text text-muted"
+                  >Hạn của phiếu mượn sẽ là hạn của cuốn sách có hạn dài
+                  nhất</small
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="confirmExtendBtn"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script th:src="@{/js/borrowing-detail-management.js}" defer></script>
+  </body>
 </html>
