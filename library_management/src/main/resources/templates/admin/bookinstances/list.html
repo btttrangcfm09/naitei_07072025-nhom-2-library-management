@@ -73,19 +73,49 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title" th:text="#{admin.bookinstances.search.card_title}"></h4>
+
                         <form th:action="@{/admin/bookinstances}" method="get" class="d-flex align-items-end flex-wrap">
+
                             <div class="form-group mr-3 flex-grow-1">
-                                <input type="text" class="form-control" id="keyword" name="keyword"
-                                    placeholder="Nhập ISBN, Barcode hoặc Call Number..." th:value="${keyword}">
+                                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="..."
+                                    th:value="${searchRequest.keyword()}">
                             </div>
+
                             <div class="form-group mr-3">
-                                <input type="date" class="form-control" id="fromDate" name="fromDate"
-                                    th:value="${fromDate}" th:title="#{admin.bookinstances.search.fromDate}">
+                                <select class="form-control" id="filterBy" name="filterBy" title="Lọc theo">
+                                    <option value="book_instance"
+                                        th:selected="${searchRequest.filterBy() == 'book_instance' or searchRequest.filterBy() == null}"
+                                        th:text="#{admin.bookinstance.filter.bookinstance}">
+                                    </option>
+                                    <option value="edition" th:selected="${searchRequest.filterBy() == 'edition'}"
+                                        th:text="#{admin.bookinstance.filter.edition}">
+                                    </option>
+                                </select>
                             </div>
-                            <div class="form-group mr-3">
-                                <input type="date" class="form-control" id="toDate" name="toDate" th:value="${toDate}"
-                                    th:title="#{admin.bookinstances.search.toDate}">
+                            <div id="status-range-filter" class="d-flex">
+                                <div class="form-group mr-3">
+                                    <select class="form-control" id="status" name="statusValue">
+                                        <option value=""> Tất cả trạng thái
+                                        </option>
+                                        <option th:each="st : ${allStatus}"
+                                            th:value="${st.ordinal()}" 
+                                            th:text="${@enumDisplayService.getBookStatusDisplayName(st)}"
+                                            th:selected="${searchRequest.statusValue() != null and searchRequest.statusValue() == st.ordinal()}">
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
+                            <div id="date-range-filter" class="d-flex">
+                                <div class="form-group mr-3">
+                                    <input type="date" class="form-control" id="fromDate" name="fromDate"
+                                        th:value="${searchRequest.fromDate()}" th:title="#{admin.bookinstances.search.fromDate}">
+                                </div>
+                                <div class="form-group mr-3">
+                                    <input type="date" class="form-control" id="toDate" name="toDate"
+                                        th:value="${searchRequest.toDate()}" th:title="#{admin.bookinstances.search.toDate}">
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <button type="submit" class="btn btn-gradient-primary mr-2">
                                     <i class="mdi mdi-magnify mr-2"></i><span
@@ -96,7 +126,6 @@
                                         th:text="#{admin.books.button.reset}"></span>
                                 </a>
                             </div>
-
                         </form>
                     </div>
                 </div>
@@ -171,7 +200,15 @@
                                 <!-- Nút Trang trước -->
                                 <li class="page-item" th:classappend="${editionPage.first ? 'disabled' : ''}">
                                     <a class="page-link"
-                                        th:href="@{/admin/bookinstances(page=${editionPage.number}, size=${editionPage.size})}">
+                                        th:href="@{/admin/bookinstances(
+                                            page=${editionPage.number}, 
+                                            size=${editionPage.size},
+                                            keyword=${searchRequest.keyword()},
+                                            filterBy=${searchRequest.filterBy()},
+                                            status=${searchRequest.statusValue()},
+                                            fromDate=${searchRequest.fromDate()},
+                                            toDate=${searchRequest.toDate()}
+                                        )}">
                                         <span>&laquo;</span>
                                     </a>
                                 </li>
@@ -180,14 +217,30 @@
                                     th:if="${i >= editionPage.number - 2 and i <= editionPage.number + 2}"
                                     class="page-item" th:classappend="${i == editionPage.number ? 'active' : ''}">
                                     <a class="page-link"
-                                        th:href="@{/admin/bookinstances(page=${i + 1}, size=${editionPage.size})}"
+                                        th:href="@{/admin/bookinstances(
+                                            page=${i + 1}, 
+                                            size=${editionPage.size},
+                                            keyword=${searchRequest.keyword()},
+                                            filterBy=${searchRequest.filterBy()},
+                                            status=${searchRequest.statusValue()},
+                                            fromDate=${searchRequest.fromDate()},
+                                            toDate=${searchRequest.toDate()}
+                                        )}"
                                         th:text="${i + 1}"></a>
                                 </li>
                                 <!-- Nút Trang sau -->
                                 <li class="page-item" th:classappend="${editionPage.last ? 'disabled' : ''}">
                                     <a class="page-link"
-                                        th:href="@{/admin/bookinstances(page=${editionPage.number + 2}, size=${editionPage.size})}">
-                                        <span>>&raquo;</span>
+                                        th:href="@{/admin/bookinstances(
+                                            page=${editionPage.number + 2}, 
+                                            size=${editionPage.size},
+                                            keyword=${searchRequest.keyword()},
+                                            filterBy=${searchRequest.filterBy()},
+                                            status=${searchRequest.statusValue()},
+                                            fromDate=${searchRequest.fromDate()},
+                                            toDate=${searchRequest.toDate()}
+                                        )}">
+                                        <span>&raquo;</span>
                                     </a>
                                 </li>
                             </ul>
