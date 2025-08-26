@@ -57,7 +57,8 @@ public final class Endpoints {
             private Borrowings() {}
 
             public static final String BASE_URL = BASE + "/borrowings";
-            public static final String CREATE_REQUEST_ACTION = "/request";
+            public static final String CREATE_REQUEST_ACTION = "/request";            
+            public static final String CANCLE_REQUEST_ACTION = "/requests/{id}";
         }
     }
 

@@ -31,6 +31,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.group2.library_management.dto.response.BorrowingReceiptResponse;
+import com.group2.library_management.entity.BorrowingReceipt;
+import com.group2.library_management.entity.User;
+import com.group2.library_management.exception.CancellationNotAllowedException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -170,5 +175,27 @@ public class BorrowingRequestServiceImpl extends AbstractBaseService implements 
                     MAX_TOTAL_BORROWING_LIMIT);
             throw new BorrowingLimitExceededException(message);
         }
+    }
+    
+    @Override
+    @Transactional 
+    public BorrowingReceiptResponse cancelBorrowingRequest(Integer receiptId) {
+        User currentUser = getCurrentUser();
+
+        BorrowingReceipt receipt = borrowingReceiptRepository.findById(receiptId)
+                .orElseThrow(() -> new ResourceNotFoundException());
+
+        if (!receipt.getUser().getId().equals(currentUser.getId())) {
+            throw new ResourceNotFoundException();
+        }
+
+        if (receipt.getStatus() != BorrowingStatus.PENDING) {
+            throw new CancellationNotAllowedException();
+        }
+
+        receipt.setStatus(BorrowingStatus.CANCELLED);
+        BorrowingReceipt updatedReceipt = borrowingReceiptRepository.save(receipt);
+
+        return BorrowingReceiptResponse.fromEntity(updatedReceipt, true);
     }
 }
