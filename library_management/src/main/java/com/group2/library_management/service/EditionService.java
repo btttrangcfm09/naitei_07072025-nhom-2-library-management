@@ -9,11 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import com.group2.library_management.dto.request.UpdateEditionRequest;
+import com.group2.library_management.dto.request.EditionQueryParameters;
 import com.group2.library_management.dto.response.*;
 import com.group2.library_management.entity.enums.BookStatus;
 
 public interface EditionService {
-    Page<EditionListResponse> getAllEditions(Pageable pageable);
+    Page<EditionListResponse> getAllEditions(EditionQueryParameters params);
     List<EditionResponse> getEditionsByBookId(Integer bookId);
     EditionDetailResponse getEditionDetailById(Integer id);
     void deleteEdition(Integer id);
