@@ -19,6 +19,7 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller("adminBookController")
 @RequestMapping("/admin/books")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class BookController {
 
     private final BookService bookService;

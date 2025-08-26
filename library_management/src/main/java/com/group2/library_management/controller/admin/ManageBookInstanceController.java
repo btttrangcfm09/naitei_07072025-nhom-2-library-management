@@ -3,6 +3,7 @@ package com.group2.library_management.controller.admin;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.PageRequest;
 
 import com.group2.library_management.dto.request.BookInstanceSearchRequest;
@@ -46,7 +48,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Controller
 @RequestMapping("/admin/bookinstances")
 @RequiredArgsConstructor
-// @PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 // commented because we have not implemented security yet
 public class ManageBookInstanceController {
     
@@ -61,6 +63,7 @@ public class ManageBookInstanceController {
     // view
     private static final String VIEW_BOOKINSTANCE_EDIT = "admin/bookinstances/edit";
     private static final String REDIRECT_TO_BOOKINSTANCE_LIST = "redirect:/admin/bookinstances";
+    private static final String REDIRECT_TO_BOOKINSTANCE_EDIT = "redirect:/admin/bookinstances/%s/edit";
 
     // message
     private final MessageSource messageSource;
@@ -133,7 +136,14 @@ public class ManageBookInstanceController {
             BookInstance bookInstance = bookInstanceService.getBookInstanceById(id);
             BookInstanceEditResponse bookInstanceEditResponse = bookInstanceMapper.mapToBookInstanceEditResponse(bookInstance);
             model.addAttribute("bookInstance", bookInstanceEditResponse);
-            return VIEW_BOOKINSTANCE_EDIT;
+            redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                bindingResult.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList())
+            );
+            return String.format(REDIRECT_TO_BOOKINSTANCE_EDIT, id); 
         }
 
         bookInstanceService.updateBookInstance(id, request);

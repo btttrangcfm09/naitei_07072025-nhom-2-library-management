@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller("adminEditionController")
 @RequestMapping("/admin/editions")
 @RequiredArgsConstructor
-// @PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 // commented because we have not implemented security yet
 public class EditionController {
 

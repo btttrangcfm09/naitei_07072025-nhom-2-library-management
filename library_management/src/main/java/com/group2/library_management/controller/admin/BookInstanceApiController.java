@@ -7,13 +7,13 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.group2.library_management.dto.response.*;
-import com.group2.library_management.dto.response.BookInstanceResponse;
 import com.group2.library_management.exception.BookInstanceNotFoundException;
 import com.group2.library_management.exception.CannotDeleteResourceException;
 import com.group2.library_management.service.BookInstanceService;
@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController("AdminBookInstanceApiController")
 @RequestMapping("/admin/bookinstances")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class BookInstanceApiController {
     private final BookInstanceService bookInstanceService;
     private final MessageSource messageSource;
