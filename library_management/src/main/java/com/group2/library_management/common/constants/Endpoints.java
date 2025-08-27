@@ -60,6 +60,14 @@ public final class Endpoints {
             public static final String CREATE_REQUEST_ACTION = "/request";            
             public static final String CANCLE_REQUEST_ACTION = "/requests/{id}";
         }
+        
+        public static final class Editions {
+            private Editions() {}
+            
+            public static final String BASE_URL = BASE + "/editions";
+
+            public static final String ALL_EDITIONS_PATHS = BASE_URL + "/**"; 
+        }
     }
 
     public static final class Admin {

@@ -1,46 +1,36 @@
 package com.group2.library_management.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import com.group2.library_management.dto.response.EditionDetailResponse;
 import com.group2.library_management.dto.response.EditionListResponse;
 import com.group2.library_management.dto.response.EditionResponse;
-import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.enums.DeletionStatus;
 import com.group2.library_management.exception.OperationFailedException;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.group2.library_management.dto.response.EditionDetailResponse;
-import com.group2.library_management.dto.response.EditionListResponse;
-import com.group2.library_management.dto.response.EditionResponse;
 import com.group2.library_management.dto.response.EditionUpdateResponse;
-import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.Publisher;
-import com.group2.library_management.exception.DuplicateIsbnException;
 import com.group2.library_management.exception.ResourceNotFoundException;
 import com.group2.library_management.repository.BookInstanceRepository;
 import com.group2.library_management.repository.EditionRepository;
 import com.group2.library_management.repository.specification.EditionSpecification;
 import com.group2.library_management.service.*;
-
-import jakarta.transaction.Transactional;
-import com.group2.library_management.entity.Publisher;
 import com.group2.library_management.entity.enums.BookStatus;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import com.group2.library_management.repository.PublisherRepository;
-import com.group2.library_management.service.*;
-
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
@@ -48,15 +38,20 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import com.group2.library_management.common.constants.PaginationConstants;
 import com.group2.library_management.dto.mapper.EditionMapper;
 import com.group2.library_management.dto.request.UpdateEditionRequest;
+import com.group2.library_management.dto.request.EditionQueryParameters;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EditionServiceImpl implements EditionService {
     private final EditionRepository editionRepository;
     private final EditionMapper editionMapper;
@@ -65,16 +60,52 @@ public class EditionServiceImpl implements EditionService {
     private final PublisherRepository publisherRepository;
     private final FileStorageService fileStorageService; // Service handle file storage
     
+    private final MessageSource messageSource;
+
     private static final long MAX_FILE_SIZE_MB = 5;
     private static final long MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
     private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/jpg", "image/webp");
-
-    private final MessageSource messageSource;
-
+    
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "title", "publicationDate", "isbn");
+    
     @Override
-    public Page<EditionListResponse> getAllEditions(Pageable pageable) {
-        Page<Edition> editionsPage = editionRepository.findAll(pageable);
-        return editionsPage.map(editionMapper::toDto);
+    public Page<EditionListResponse> getAllEditions(EditionQueryParameters params) {
+        int page = Optional.ofNullable(params.page()).orElse(PaginationConstants.DEFAULT_PAGE_NUMBER);
+        int size = Optional.ofNullable(params.size()).orElse(PaginationConstants.DEFAULT_PAGE_SIZE);
+        String[] sortParams = Optional.ofNullable(params.sort()).orElse(PaginationConstants.DEFAULT_SORT);
+        
+        // Xử lý tham số sắp xếp
+        String sortField = sortParams[0];
+        if (!StringUtils.hasText(sortField) || !ALLOWED_SORT_FIELDS.contains(sortField)) { 
+            sortField = PaginationConstants.DEFAULT_SORT[0]; 
+        }
+        Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("asc") 
+                                   ? Sort.Direction.ASC 
+                                   : Sort.Direction.DESC;
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by(new Sort.Order(direction, sortField)));
+
+        Specification<Edition> spec = Specification.unrestricted(); 
+
+        if (StringUtils.hasText(params.keyword())) {
+            spec = spec.and(EditionSpecification.searchEditionByKeyword(params.keyword()));
+        }
+
+        if (!CollectionUtils.isEmpty(params.publicationYears())) {
+            spec = spec.and(EditionSpecification.hasPublicationYears(params.publicationYears()));
+        }
+        
+        if (!CollectionUtils.isEmpty(params.publisherIds())) {
+            spec = spec.and(EditionSpecification.hasPublishers(params.publisherIds()));
+        }
+
+        if (!CollectionUtils.isEmpty(params.languages())) {
+            spec = spec.and(EditionSpecification.hasLanguages(params.languages()));
+        }
+
+        Page<Edition> editionPage = editionRepository.findAll(spec, pageable);
+
+        return editionPage.map(editionMapper::toDto);
     }
 
     @Override

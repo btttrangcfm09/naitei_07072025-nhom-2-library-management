@@ -1,19 +1,22 @@
 package com.group2.library_management.repository.specification;
 
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
 
 import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.Publisher;
 import com.group2.library_management.entity.enums.BookStatus;
-
-import jakarta.persistence.criteria.Predicate;
 
 public class EditionSpecification {
     public static Specification<Edition> distinct() {
@@ -72,6 +75,63 @@ public class EditionSpecification {
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    /**
+     * Tiêu chí: Lọc các Edition được xuất bản theo năm.
+     * Edition phải thuộc ÍT NHẤT MỘT trong các năm được cung cấp (OR)
+     * 
+     * @param years Danh sách năm xuất bản
+     * @return Specification
+     */
+    public static Specification<Edition> hasPublicationYears(List<Integer> years) {
+        return (root, query, criteriaBuilder) -> {
+            if (CollectionUtils.isEmpty(years)) { 
+                return null;
+            }
+
+            Expression<Integer> yearExpression = criteriaBuilder.function("YEAR", Integer.class, root.get("publicationDate"));
+            return yearExpression.in(years); 
+        };
+    }
+
+    /**
+     * Tiêu chí: Lọc các Edition theo nhà xuất bản.
+     * Edition phải thuộc ÍT NHẤT MỘT trong các NXB được cung cấp (OR)
+     * 
+     * @param publisherIds Danh sách ID của nhà xuất bản
+     * @return Specification
+     */
+    public static Specification<Edition> hasPublishers(List<Integer> publisherIds) {
+        return (root, query, criteriaBuilder) -> {
+            if (CollectionUtils.isEmpty(publisherIds)) {
+                return null;
+            }
+
+            Join<Edition, Publisher> publisherJoin = root.join("publisher", JoinType.INNER);
+            return publisherJoin.get("id").in(publisherIds); 
+        };
+    }
+
+    /**
+     * Tiêu chí: Lọc các Edition theo ngôn ngữ.
+     * So sánh không phân biệt hoa thường.
+     * 
+     * @param languages Danh sách tên ngôn ngữ
+     * @return Specification
+     */
+    public static Specification<Edition> hasLanguages(List<String> languages) {
+        return (root, query, criteriaBuilder) -> {
+            if (CollectionUtils.isEmpty(languages)) {
+                return null;
+            }
+
+            List<String> lowerCaseLanguages = languages.stream()
+                                                       .map(String::toLowerCase)
+                                                       .map(String::trim)
+                                                       .collect(Collectors.toList());
+            return criteriaBuilder.lower(root.get("language")).in(lowerCaseLanguages);
         };
     }
 }

@@ -83,7 +83,10 @@ public class SecurityConfig {
                         Endpoints.ApiV1.Auth.LOGIN_ENDPOINT, 
                         Endpoints.ApiV1.Auth.REFRESH_ENDPOINT
                     ).permitAll()
-                    .requestMatchers(HttpMethod.GET, Endpoints.ApiV1.Books.ALL_BOOKS_PATHS).permitAll()
+                    .requestMatchers(HttpMethod.GET, 
+                        Endpoints.ApiV1.Books.ALL_BOOKS_PATHS,
+                        Endpoints.ApiV1.Editions.ALL_EDITIONS_PATHS
+                    ).permitAll()
                     .anyRequest().authenticated();
             })
             .csrf(AbstractHttpConfigurer::disable)
