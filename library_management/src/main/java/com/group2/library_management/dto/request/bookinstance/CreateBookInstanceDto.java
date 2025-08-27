@@ -10,10 +10,11 @@ import com.group2.library_management.entity.enums.*;
 @Builder
 
 public record CreateBookInstanceDto(@NotNull Edition edition,
-                              @NotNull(message = "'Barcode' không được để trống") @Size(max = 100, message = "Độ dài Barcode < 100") String barcode,
-                              @NotNull(message = "'Call Number' không được để trống") @Size(max = 100, message = "Độ dài Barcode < 100") String callNumber,
-                              @NotNull(message = "'Ngày nhập' không được để trống") LocalDate acquiredDate,
-                              @NotNull(message = "'Giá nhập' không được để trông") @Digits(integer = 10, fraction = 2) BigDecimal acquiredPrice,
+                              @NotNull(message = "{bookinstance.barcode.notBlank}") @Size(max = 100, message = "{bookinstance.barcode.size}") String barcode,
+                              @NotNull(message = "{bookinstance.callNumber.notBlank}") @Size(max = 100, message = "{bookinstance.callNumber.size}") String callNumber,
+                              @NotNull(message = "{bookinstance.acquiredDate.notBlank}") 
+                              @PastOrPresent(message = "{bookinstance.acquiredDate.pastOrPresent}") LocalDate acquiredDate,
+                              @NotNull(message = "{bookinstance.acquiredPrice.notBlank}") @Digits(integer = 10, fraction = 2) BigDecimal acquiredPrice,
                               @NotNull BookStatus status,
                               String note) {
                         
