@@ -6,12 +6,15 @@ import java.util.stream.Collectors;
 import java.util.Collections;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.group2.library_management.dto.request.UpdateEditionRequest;
 import com.group2.library_management.dto.response.EditionDetailResponse;
 import com.group2.library_management.dto.response.EditionListResponse;
 import com.group2.library_management.dto.response.EditionResponse;
+import com.group2.library_management.dto.response.EditionUpdateResponse;
 import com.group2.library_management.entity.Book;
 import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.Edition;
@@ -89,4 +92,10 @@ public abstract class EditionMapper {
     @Mapping(source = "edition.publisher.name", target = "publisherName")
     @Mapping(source = "edition.publicationDate.year", target = "publicationYear")
     public abstract EditionResponse toResponseDto(Edition edition, DeletionStatus deletionStatus);
+
+    @Mapping(source = "publisher.id", target = "publisherId")
+    public abstract EditionUpdateResponse toUpdateResponse(Edition edition);
+
+    @Mapping(target = "publisher", ignore = true)
+    public abstract void updateFromRequest(UpdateEditionRequest request, @MappingTarget Edition edition);
 } 

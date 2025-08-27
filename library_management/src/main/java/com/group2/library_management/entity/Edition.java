@@ -55,6 +55,8 @@ public class Edition {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+    @Version
+    private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", referencedColumnName = "id")

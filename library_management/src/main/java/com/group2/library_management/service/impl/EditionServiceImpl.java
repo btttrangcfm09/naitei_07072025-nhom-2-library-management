@@ -8,6 +8,15 @@ import com.group2.library_management.entity.BookInstance;
 import com.group2.library_management.entity.Edition;
 import com.group2.library_management.entity.enums.DeletionStatus;
 import com.group2.library_management.exception.OperationFailedException;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.group2.library_management.dto.response.EditionDetailResponse;
+import com.group2.library_management.dto.response.EditionListResponse;
+import com.group2.library_management.dto.response.EditionResponse;
+import com.group2.library_management.dto.response.EditionUpdateResponse;
+import com.group2.library_management.entity.Edition;
+import com.group2.library_management.entity.Publisher;
+import com.group2.library_management.exception.DuplicateIsbnException;
 import com.group2.library_management.exception.ResourceNotFoundException;
 import com.group2.library_management.repository.BookInstanceRepository;
 import com.group2.library_management.repository.EditionRepository;
@@ -24,14 +33,27 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import com.group2.library_management.repository.PublisherRepository;
+import com.group2.library_management.service.*;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.group2.library_management.dto.mapper.EditionMapper;
+import com.group2.library_management.dto.request.UpdateEditionRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +62,20 @@ public class EditionServiceImpl implements EditionService {
     private final EditionMapper editionMapper;
 
     private final BookInstanceRepository bookInstanceRepository;
+    private final PublisherRepository publisherRepository;
+    private final FileStorageService fileStorageService; // Service handle file storage
+    
+    private static final long MAX_FILE_SIZE_MB = 5;
+    private static final long MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+    private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/jpg", "image/webp");
+
+    private final MessageSource messageSource;
+
+    @Override
+    public Page<EditionListResponse> getAllEditions(Pageable pageable) {
+        Page<Edition> editionsPage = editionRepository.findAll(pageable);
+        return editionsPage.map(editionMapper::toDto);
+    }
 
     @Override
     public List<EditionResponse> getEditionsByBookId(Integer bookId) {
@@ -121,5 +157,97 @@ public class EditionServiceImpl implements EditionService {
         Page<Edition> editionsPage = editionRepository.findAll(spec, pageable);
 
         return editionsPage.map(editionMapper::toDto);
+    }
+
+    @Override
+    public EditionUpdateResponse findEditionForUpdate(Integer id) {
+        Edition edition = editionRepository.findById(id)
+            .orElseThrow(() -> {
+                String message = messageSource.getMessage(
+                    "error.edition.not_found", new Object[]{id}, LocaleContextHolder.getLocale()
+                );
+                return new ResourceNotFoundException(message);
+            });
+        return editionMapper.toUpdateResponse(edition);
+    }
+
+    @Override
+    @Transactional
+    public void updateEdition(Integer id, UpdateEditionRequest request, MultipartFile coverImageFile) {
+
+        Edition edition = editionRepository.findById(id)
+            .orElseThrow(() -> {
+                String message = messageSource.getMessage(
+                    "error.edition.not_found", new Object[]{id}, LocaleContextHolder.getLocale()
+                );
+                return new ResourceNotFoundException(message);
+            });
+
+        String newCoverImageDbPath = null;
+
+        // Handle cover image file
+        if (coverImageFile != null && !coverImageFile.isEmpty()) {
+            validateCoverImage(coverImageFile);
+
+            newCoverImageDbPath = fileStorageService.storeFile(coverImageFile, id);
+            edition.setCoverImageUrl(newCoverImageDbPath);
+        }
+
+        // Get publisher
+        Publisher publisher = publisherRepository.findById(request.getPublisherId())
+            .orElseThrow(() -> {
+                String message = messageSource.getMessage(
+                    "error.publisher.not_found",
+                    new Object[]{request.getPublisherId()},
+                    LocaleContextHolder.getLocale()
+                );
+                return new ResourceNotFoundException(message);
+            });
+
+        // Use editionMapper to update edition fields
+        editionMapper.updateFromRequest(request, edition);
+        edition.setPublisher(publisher);
+
+        // Save changes into database
+        try {
+            editionRepository.saveAndFlush(edition);
+        } catch (DataIntegrityViolationException e) {
+            if (newCoverImageDbPath != null) {
+                String filenameToDelete = newCoverImageDbPath.substring(newCoverImageDbPath.lastIndexOf("/") + 1);
+                fileStorageService.deleteFile(filenameToDelete);
+            }
+            String message = messageSource.getMessage(
+                "error.edition.isbn.exists",
+                null,
+                LocaleContextHolder.getLocale()
+            );
+            throw new IllegalArgumentException(message);
+        }
+        catch (ObjectOptimisticLockingFailureException e) {
+            if (newCoverImageDbPath != null) {
+                fileStorageService.deleteFile(newCoverImageDbPath);
+            }
+            String message = messageSource.getMessage(
+                "error.edition.optimistic_lock", null, LocaleContextHolder.getLocale()
+            );
+            throw new OptimisticLockingFailureException(message);
+        }
+    }
+
+    private void validateCoverImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            String message = messageSource.getMessage("error.file.is_empty", null, LocaleContextHolder.getLocale());
+            throw new IllegalArgumentException(message);
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE_BYTES) {
+            String message = messageSource.getMessage("error.file.invalid.size", new Object[]{MAX_FILE_SIZE_MB}, LocaleContextHolder.getLocale());
+            throw new IllegalArgumentException(message);
+        }
+
+        if (file.getContentType() == null || !ALLOWED_IMAGE_TYPES.contains(file.getContentType())) {
+            String message = messageSource.getMessage("error.file.invalid.type", null, LocaleContextHolder.getLocale());
+            throw new IllegalArgumentException(message);
+        }
     }
 }

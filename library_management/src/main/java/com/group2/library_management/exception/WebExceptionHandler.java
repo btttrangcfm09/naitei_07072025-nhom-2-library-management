@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -88,7 +89,7 @@ public class WebExceptionHandler {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, MethodArgumentNotValidException.class, ConcurrencyException.class})
-    public String handleIllegalArgumentException(
+    public String handleCommonException(
             Exception ex,
             RedirectAttributes redirectAttributes,
             HttpServletRequest request) {
@@ -149,6 +150,58 @@ public class WebExceptionHandler {
 
         if (referer != null && !referer.isEmpty()) {
 
+            return "redirect:" + referer;
+        }
+        return "redirect:/";
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public String handleFileStorageException(FileStorageException ex, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
+        String errorCode = ex.getErrorCode();
+        Object[] args = ex.getArgs();
+
+        if (errorCode == null) {
+            errorCode = "error.file.storage_failed";
+        }
+
+        String message = messageSource.getMessage(
+            errorCode,
+            args, 
+            request.getLocale()
+        );
+
+        redirectAttributes.addFlashAttribute("errorMessage", message);
+
+        String referer = request.getHeader("Referer");
+        if (referer != null && !referer.isEmpty()) {
+            return "redirect:" + referer;
+        }
+
+        return "redirect:/";
+    }
+
+    @ExceptionHandler(DuplicateIsbnException.class)
+    public String handleDuplicateIsbnException(DuplicateIsbnException ex,
+                                            RedirectAttributes redirectAttributes,
+                                            HttpServletRequest request) {
+        return addFlashAndRedirect(ex.getMessage(), redirectAttributes, request);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public String handleOptimisticLockingFailure(OptimisticLockingFailureException ex,
+                                                RedirectAttributes redirectAttributes,
+                                                HttpServletRequest request) {
+        return addFlashAndRedirect(ex.getMessage(), redirectAttributes, request);
+    }
+
+    // helper
+    private String addFlashAndRedirect(String message,
+                                    RedirectAttributes redirectAttributes,
+                                    HttpServletRequest request) {
+        redirectAttributes.addFlashAttribute("errorMessage", message);
+        String referer = request.getHeader("Referer");
+        if (referer != null && !referer.isEmpty()) {
             return "redirect:" + referer;
         }
         return "redirect:/";
