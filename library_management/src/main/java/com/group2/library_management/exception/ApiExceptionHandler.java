@@ -392,6 +392,28 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
+
+    @ExceptionHandler(CancellationNotAllowedException.class)
+    public ResponseEntity<BaseApiResponse<ErrorResponse>> handleCancellationNotAllowedException(CancellationNotAllowedException ex, HttpServletRequest request) {
+        String errorMessage = getMessage("error.message.borrowing.cancellation_not_allowed");
+        String errorTitle = getMessage("error.title.action.not_allowed");
+
+        ErrorResponse errorResponse = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            errorMessage, 
+            request.getRequestURI()
+        );
+
+        BaseApiResponse<ErrorResponse> apiResponse = new BaseApiResponse<>(
+            HttpStatus.CONFLICT.value(),
+            errorResponse,
+            errorTitle
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+    
     @ExceptionHandler(InvalidPickupDateException.class)
     public ResponseEntity<BaseApiResponse<ErrorResponse>> handleInvalidPickupDateException(InvalidPickupDateException ex, HttpServletRequest request) {
         String errorTitle = getMessage("error.title.validation.failed");
