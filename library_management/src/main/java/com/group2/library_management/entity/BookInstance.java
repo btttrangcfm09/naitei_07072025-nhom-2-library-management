@@ -25,7 +25,7 @@ import com.group2.library_management.entity.enums.BookStatus;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE book_instances SET delete_at = NOW() WHERE id = ?") // update time when delete
+@SQLDelete(sql = "UPDATE book_instances SET delete_at = NOW() WHERE id = ? AND version = ?") // update time when delete
 @SQLRestriction("delete_at IS NULL")
 public class BookInstance {
 

@@ -20,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE editions SET deleted_at = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE editions SET deleted_at = NOW() WHERE id = ? AND version = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class Edition {
     @Id
