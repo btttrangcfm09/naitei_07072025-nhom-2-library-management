@@ -7,9 +7,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.group2.library_management.dto.mapper.BookInstanceMapper;
+import com.group2.library_management.dto.request.bookinstance.UpdateBookInstanceRequest;
 import com.group2.library_management.dto.response.BookInstanceDetailResponse;
 import com.group2.library_management.dto.response.BookInstanceResponse;
 import com.group2.library_management.repository.BookInstanceRepository;
@@ -39,6 +42,17 @@ public class BookInstanceServiceImpl implements BookInstanceService {
         return messageSource.getMessage("bookinstance.exception.can.delete", args, locale);
     }
 
+    public String getMessage(String message, Integer id){
+        Locale locale =LocaleContextHolder.getLocale();
+        Object[] args = { id };
+        return messageSource.getMessage(message, args, locale);
+    }
+
+    public String getMessage(String message){
+        Locale locale =LocaleContextHolder.getLocale();
+        return messageSource.getMessage(message, null, locale);
+    }
+    
     @Override
     public List<BookInstanceResponse> getBookInstancesByEditionId(Integer editionId) {
         return bookInstanceRepository
@@ -95,5 +109,27 @@ public class BookInstanceServiceImpl implements BookInstanceService {
             .map(bookInstanceMapper::mapToBookInstanceDetailResponse)
             .orElse(null);
             
+    }
+
+    @Override 
+    public BookInstance getBookInstanceById(Integer bookInstanceId) throws ResourceNotFoundException {
+        return bookInstanceRepository.findById(bookInstanceId)
+        .orElseThrow(() -> new ResourceNotFoundException(getMessage("error.bookinstance.not_found", bookInstanceId)));
+    }
+
+    @Transactional
+    @Override
+    public void updateBookInstance(Integer id, UpdateBookInstanceRequest request) throws IllegalArgumentException, ResourceNotFoundException, ConcurrencyException {
+
+        BookInstance bookInstance = getBookInstanceById(id);
+        if(!request.barcode().equals(bookInstance.getBarcode()) && bookInstanceRepository.existsByBarcode(request.barcode())){
+            throw new IllegalArgumentException(getMessage("error.bookinstances.barcode.exists"));
+        }
+        bookInstanceMapper.updateFromRequest(request, bookInstance);
+        try{
+            bookInstanceRepository.save(bookInstance);
+        } catch (OptimisticLockingFailureException e) {
+            throw new ConcurrencyException(getMessage("error.bookinstances.optimistic_lock"));
+        }
     }
 }

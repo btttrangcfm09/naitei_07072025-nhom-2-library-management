@@ -58,6 +58,9 @@ public class BookInstance {
     @Column(name = "delete_at")
     private LocalDateTime deleteAt;
 
+    @Version
+    private Integer version;
+
     @OneToMany(mappedBy = "bookInstance")
     private List<BorrowingDetail> borrowingDetails;
 

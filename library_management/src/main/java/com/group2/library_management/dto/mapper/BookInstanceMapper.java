@@ -3,9 +3,11 @@ package com.group2.library_management.dto.mapper;
 import java.util.Optional;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import com.group2.library_management.dto.request.bookinstance.*;
 import com.group2.library_management.dto.response.BookInstanceDetailResponse;
+import com.group2.library_management.dto.response.BookInstanceEditResponse;
 import com.group2.library_management.dto.response.BookInstanceResponse;
 import com.group2.library_management.entity.*;
 
@@ -42,4 +44,25 @@ public abstract class BookInstanceMapper {
         });
         return bookInstanceDetailResponse.build();
     }
+
+    public abstract UpdateBookInstanceRequest maptoUpdateBookInstanceRequest(BookInstance bookInstance);
+
+    public abstract void updateFromRequest(UpdateBookInstanceRequest request, @MappingTarget BookInstance bookInstance);
+
+    public BookInstanceEditResponse mapToBookInstanceEditResponse(BookInstance bookInstance){
+        // bookInstance = null will not occur because it hanlde in getBookInstanceById in showBookInstanceEditForm method in BookInstanceController
+
+        BookInstanceEditResponse.BookInstanceEditResponseBuilder bookInstanceEditResponse = BookInstanceEditResponse
+                .builder()
+                .id(bookInstance.getId());
+        
+        Optional.ofNullable(bookInstance.getEdition()).ifPresent(edition -> {
+            bookInstanceEditResponse.editionTitle(edition.getTitle())
+                    .coverImageUrl(edition.getCoverImageUrl())
+                    .isbn(edition.getIsbn());
+        });
+
+        return bookInstanceEditResponse.build();
+    }
+
 }
