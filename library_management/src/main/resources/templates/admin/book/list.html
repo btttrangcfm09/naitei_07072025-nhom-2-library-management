@@ -121,7 +121,7 @@
                                 </div>
                             </td>
                             <td class="text-center">
-                                <a href="#" class="action-edit text-warning" th:title="#{admin.books.tooltip.edit}">
+                                <a th:href="@{/admin/books/{id}/edit(id=${book.id()})}" class="action-edit text-warning" th:title="#{admin.books.tooltip.edit}">
                                     <i class="mdi mdi-pencil icon-large"></i>
                                 </a>
                                 <a href="#" class="action-delete text-danger" th:title="#{admin.books.tooltip.delete}">
